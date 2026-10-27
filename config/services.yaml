@@ -1,0 +1,68 @@
+parameters:
+    app.instagram_url: '%env(INSTAGRAM_URL)%'
+    app.facebook_url: '%env(FACEBOOK_URL)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Model/'
+            - '../src/Repository/InMemory/'
+
+    Google\Cloud\Firestore\FirestoreClient:
+        arguments:
+            - { projectId: '%env(GOOGLE_CLOUD_PROJECT)%' }
+
+    App\Repository\FormatRepositoryInterface: '@App\Repository\Firestore\FirestoreFormatRepository'
+    App\Repository\EventRepositoryInterface: '@App\Repository\Firestore\FirestoreEventRepository'
+    App\Repository\MemberRepositoryInterface: '@App\Repository\Firestore\FirestoreMemberRepository'
+    App\Repository\TrackingLinkRepositoryInterface: '@App\Repository\Firestore\FirestoreTrackingLinkRepository'
+
+    app.logo_adapter:
+        class: League\Flysystem\Local\LocalFilesystemAdapter
+        arguments: ['%kernel.project_dir%/public/uploads']
+
+    app.logo_filesystem:
+        class: League\Flysystem\Filesystem
+        arguments: ['@app.logo_adapter']
+
+when@prod:
+    services:
+        Google\Cloud\Storage\StorageClient: ~
+
+        app.logo_bucket:
+            class: Google\Cloud\Storage\Bucket
+            factory: ['@Google\Cloud\Storage\StorageClient', 'bucket']
+            arguments: ['%env(LOGO_BUCKET)%']
+
+        app.logo_adapter:
+            class: League\Flysystem\GoogleCloudStorage\GoogleCloudStorageAdapter
+            arguments:
+                - '@app.logo_bucket'
+                - ''
+                - !service { class: League\Flysystem\GoogleCloudStorage\UniformBucketLevelAccessVisibility }
+
+        app.session_handler:
+            class: Google\Cloud\Firestore\FirestoreSessionHandler
+            factory: ['@Google\Cloud\Firestore\FirestoreClient', 'sessionHandler']
+            arguments:
+                - { collectionNameTemplate: 'sessions', gcLimit: 100 }
+
+when@test:
+    services:
+        App\Repository\FormatRepositoryInterface:
+            class: App\Repository\InMemory\InMemoryFormatRepository
+            public: true
+        App\Repository\EventRepositoryInterface:
+            class: App\Repository\InMemory\InMemoryEventRepository
+            public: true
+        App\Repository\MemberRepositoryInterface:
+            class: App\Repository\InMemory\InMemoryMemberRepository
+            public: true
+        App\Repository\TrackingLinkRepositoryInterface:
+            class: App\Repository\InMemory\InMemoryTrackingLinkRepository
+            public: true

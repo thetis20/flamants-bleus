@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos formats — Les Flamants Bleus{% endblock %}
+
+{% block main %}
+    <h1 class="page-title">Nos formats</h1>
+    <div class="format-grid">
+        {% for format in formats %}
+            <a class="format-tile" href="{{ path('format_show', {slug: format.slug}) }}">
+                {% if format.logoPath %}
+                    <img src="{{ logo_url(format.logoPath) }}" alt="" loading="lazy">
+                {% endif %}
+                <h2>{{ format.title }}</h2>
+                {% if format.description %}
+                    <p>{{ format.description|length > 140 ? format.description|slice(0, 140) ~ '…' : format.description }}</p>
+                {% endif %}
+            </a>
+        {% else %}
+            <p class="empty">Les formats arrivent bientôt.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

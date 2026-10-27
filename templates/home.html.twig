@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+    <section class="hero">
+        <p class="kicker">La troupe amateure d'improvisation théâtrale</p>
+        <h1>Les Flamants Bleus</h1>
+        <p class="tagline">L'imaginaire prend son envol</p>
+    </section>
+
+    <section class="agenda" aria-labelledby="agenda-title">
+        <h2 id="agenda-title">Prochaines dates</h2>
+        {% for row in rows %}
+            {{ include('_event_card.html.twig', {event: row.event, format: row.format}) }}
+        {% else %}
+            <p class="empty">Pas de spectacle annoncé pour le moment. Suivez-nous sur les réseaux pour connaître les prochaines dates !</p>
+        {% endfor %}
+    </section>
+{% endblock %}

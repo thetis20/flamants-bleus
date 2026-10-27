@@ -1,0 +1,12 @@
+twig:
+    file_name_pattern: '*.twig'
+    form_themes: ['form/theme.html.twig']
+    date:
+        timezone: Europe/Paris
+    globals:
+        instagram_url: '%app.instagram_url%'
+        facebook_url: '%app.facebook_url%'
+
+when@test:
+    twig:
+        strict_variables: true

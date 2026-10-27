@@ -1,0 +1,49 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block main %}
+    <div class="toolbar">
+        <h1>{{ link.label }}</h1>
+        <a href="{{ path('admin_link_edit', {slug: link.slug}) }}">Modifier</a>
+    </div>
+
+    <dl class="link-facts">
+        <dt>Lien à partager</dt>
+        <dd><input type="text" value="{{ url }}" readonly onclick="this.select()" class="copy-field"></dd>
+        <dt>Page d'arrivée</dt>
+        <dd><code>{{ link.target }}</code></dd>
+        <dt>Visites depuis la création</dt>
+        <dd class="big-number">{{ link.total }}</dd>
+        <dt>Sur les 30 derniers jours</dt>
+        <dd class="big-number">{{ period_total }}</dd>
+    </dl>
+
+    <h2>Visites par jour</h2>
+    <div class="bars" role="img" aria-label="Visites par jour sur les 30 derniers jours">
+        {% for d in days %}
+            <div class="bar" style="--h: {{ (d.count / max * 100)|round }}%" title="{{ d.day|format_date(pattern: 'EEE d MMM', locale: 'fr') }} : {{ d.count }}">
+                <span class="bar-count">{{ d.count ?: '' }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="bars-axis">
+        <span>{{ days|first.day|format_date(pattern: 'd MMM', locale: 'fr') }}</span>
+        <span>aujourd'hui</span>
+    </div>
+
+    <h2>QR code</h2>
+    <div class="qr">
+        <img src="{{ path('admin_link_qr', {slug: link.slug, format: 'png'}) }}" alt="QR code vers {{ url }}" width="200" height="200">
+        <p>
+            <a class="button" href="{{ path('admin_link_qr', {slug: link.slug, format: 'svg'}) }}">Télécharger en SVG (impression)</a>
+            <a href="{{ path('admin_link_qr', {slug: link.slug, format: 'png'}) }}">Télécharger en PNG</a>
+        </p>
+    </div>
+
+    <p class="danger-zone">
+        {{ include('admin/_delete.html.twig', {
+            action: path('admin_link_delete', {slug: link.slug}),
+            token_id: 'delete-link-' ~ link.slug,
+            confirm: 'Supprimer ce lien et ses compteurs ? Les QR codes déjà imprimés mèneront à l\'accueil sans être comptés.',
+        }) }}
+    </p>
+{% endblock %}

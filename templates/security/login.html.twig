@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace membres — Les Flamants Bleus{% endblock %}
+
+{% block main %}
+    <section class="login-box">
+        <h1 class="page-title">Espace membres</h1>
+        <p>Réservé aux membres de la troupe, pour mettre à jour les dates et les formats.</p>
+        {% if error %}
+            <p class="flash flash-error">{{ error.messageKey|replace(error.messageData) }}</p>
+        {% endif %}
+        <a class="button button-google" href="{{ path('connect_google') }}">Se connecter avec Google</a>
+    </section>
+{% endblock %}

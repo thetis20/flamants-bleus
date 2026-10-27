@@ -1,0 +1,36 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block main %}
+    <h1>Membres</h1>
+    <p class="hint">Les personnes de cette liste peuvent se connecter avec leur compte Google et modifier le site.</p>
+
+    {{ form_start(form, {attr: {class: 'form form-inline'}}) }}
+        {{ form_row(form.email) }}
+        <button type="submit" class="button">Ajouter</button>
+    {{ form_end(form) }}
+
+    <table class="table">
+        <thead><tr><th>Adresse</th><th>Ajouté·e par</th><th>Le</th><th></th></tr></thead>
+        <tbody>
+            {% for member in members %}
+                <tr>
+                    <td>{{ member.email }}</td>
+                    <td>{{ member.addedBy }}</td>
+                    <td>{{ member.addedAt|format_date(pattern: 'd MMM yyyy', locale: 'fr') }}</td>
+                    <td class="actions">
+                        {% if member.email != app.user.userIdentifier %}
+                            {{ include('admin/_delete.html.twig', {
+                                action: path('admin_member_delete'),
+                                token_id: 'delete-member-' ~ member.email,
+                                confirm: 'Retirer ' ~ member.email ~ ' des membres ?',
+                                fields: {email: member.email},
+                            }) }}
+                        {% else %}
+                            <span class="muted">vous</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

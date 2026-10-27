@@ -1,0 +1,15 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block main %}
+    <h1>{{ heading }}</h1>
+    {% if not has_formats %}
+        <p class="flash flash-error">Créez d'abord un format dans l'onglet <a href="{{ path('admin_format_new') }}">Formats</a>.</p>
+    {% endif %}
+    {{ form_start(form, {attr: {class: 'form'}}) }}
+        {{ form_widget(form) }}
+        <div class="form-actions">
+            <button type="submit" class="button">Enregistrer</button>
+            <a href="{{ path('admin_events') }}">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

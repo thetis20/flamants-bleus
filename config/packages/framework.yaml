@@ -1,0 +1,22 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    default_locale: fr
+
+    session:
+        cookie_secure: auto
+        cookie_samesite: lax
+
+    # Cloud Run's front end is the only thing that can reach the container.
+    trusted_proxies: '%env(TRUSTED_PROXIES)%'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host']
+
+when@prod:
+    framework:
+        session:
+            handler_id: app.session_handler
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

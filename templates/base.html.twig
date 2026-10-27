@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Les Flamants Bleus — troupe d'improvisation théâtrale{% endblock %}</title>
+        <meta name="description" content="{% block description %}Les Flamants Bleus, troupe amateure d'improvisation théâtrale : prochains spectacles, formats et réservations.{% endblock %}">
+        <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+        <meta property="og:title" content="{{ block('title') }}">
+        <meta property="og:description" content="{{ block('description') }}">
+        <meta property="og:image" content="{{ absolute_url(asset('images/logo.png')) }}">
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    </head>
+    <body class="{% block body_class %}public{% endblock %}">
+        {% block body %}
+            <header class="site-header">
+                <a href="{{ path('home') }}" class="brand">
+                    <img src="{{ asset('images/logo.png') }}" alt="Les Flamants Bleus" width="229" height="199">
+                </a>
+                <nav class="site-nav" aria-label="Navigation principale">
+                    <a href="{{ path('home') }}"{% if app.current_route == 'home' %} aria-current="page"{% endif %}>Prochaines dates</a>
+                    <a href="{{ path('formats') }}"{% if app.current_route starts with 'format' %} aria-current="page"{% endif %}>Nos formats</a>
+                </nav>
+            </header>
+
+            <main class="site-main">
+                {% block main %}{% endblock %}
+            </main>
+
+            <footer class="site-footer">
+                <p class="follow">Retrouvez-nous sur</p>
+                <ul class="socials">
+                    {% if instagram_url %}
+                        <li><a href="{{ instagram_url }}" rel="noopener" target="_blank">{{ include('_icon_instagram.svg.twig') }}cieflamantsbleus</a></li>
+                    {% endif %}
+                    {% if facebook_url %}
+                        <li><a href="{{ facebook_url }}" rel="noopener" target="_blank">{{ include('_icon_facebook.svg.twig') }}Les Flamants Bleus</a></li>
+                    {% endif %}
+                </ul>
+                <p class="small">La troupe amateure d'improvisation théâtrale · <a href="{{ path('login') }}">Espace membres</a></p>
+            </footer>
+        {% endblock %}
+    </body>
+</html>

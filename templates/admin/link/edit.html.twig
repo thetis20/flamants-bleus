@@ -1,0 +1,12 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block main %}
+    <h1>{{ heading }}</h1>
+    {{ form_start(form, {attr: {class: 'form'}}) }}
+        {{ form_widget(form) }}
+        <div class="form-actions">
+            <button type="submit" class="button">Enregistrer</button>
+            <a href="{{ path('admin_links') }}">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

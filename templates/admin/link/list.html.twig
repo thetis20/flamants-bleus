@@ -1,0 +1,27 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block main %}
+    <div class="toolbar">
+        <h1>Liens suivis</h1>
+        <a class="button" href="{{ path('admin_link_new') }}">Créer un lien</a>
+    </div>
+    <p class="hint">Un lien suivi (par exemple le QR code du flyer ou le lien de la bio Instagram) compte les personnes qui arrivent sur le site par ce chemin, puis les amène sur la page choisie.</p>
+
+    {% if links %}
+        <table class="table">
+            <thead><tr><th>Libellé</th><th>Lien</th><th>Arrivée</th><th class="num">Visites</th></tr></thead>
+            <tbody>
+                {% for link in links %}
+                    <tr>
+                        <td><a href="{{ path('admin_link_show', {slug: link.slug}) }}">{{ link.label }}</a></td>
+                        <td><code>/r/{{ link.slug }}</code></td>
+                        <td><code>{{ link.target }}</code></td>
+                        <td class="num">{{ link.total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="empty">Aucun lien suivi pour l'instant.</p>
+    {% endif %}
+{% endblock %}

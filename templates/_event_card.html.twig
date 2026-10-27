@@ -1,0 +1,32 @@
+{# expects: event, format (nullable) #}
+<article class="event-card">
+    <time class="date-tile" datetime="{{ event.startsAt|date('c') }}">
+        <span class="month">{{ event.startsAt|format_date(pattern: 'MMMM', locale: 'fr')|upper }}</span>
+        <span class="day">{{ event.startsAt|date('d') }}</span>
+        <span class="weekday">{{ event.startsAt|format_date(pattern: 'EEE', locale: 'fr')|trim('.')|capitalize }}</span>
+    </time>
+
+    <div class="event-body">
+        <h3 class="event-title">{{ event.title }}</h3>
+        <ul class="event-meta">
+            <li><span class="pin" aria-hidden="true"></span><span class="sr-only">Lieu : </span>{{ event.venue }}</li>
+            <li><span class="clock" aria-hidden="true"></span><span class="sr-only">Heure : </span>{{ event.startsAt|date('G') }}h{{ event.startsAt|date('i') != '00' ? event.startsAt|date('i') }}</li>
+            {% if event.price %}<li><span class="ticket" aria-hidden="true"></span><span class="sr-only">Prix : </span>{{ event.price }}</li>{% endif %}
+        </ul>
+        {% if event.bookingUrl %}
+            <a class="button" href="{{ event.bookingUrl }}" rel="noopener" target="_blank">Réserver</a>
+        {% else %}
+            <span class="booking-soon">Réservations bientôt ouvertes</span>
+        {% endif %}
+    </div>
+
+    {% if format %}
+        <a class="event-format" href="{{ path('format_show', {slug: format.slug}) }}" title="Découvrir le format {{ format.title }}">
+            {% if format.logoPath %}
+                <img src="{{ logo_url(format.logoPath) }}" alt="{{ format.title }}" loading="lazy">
+            {% else %}
+                <span class="format-name">{{ format.title }}</span>
+            {% endif %}
+        </a>
+    {% endif %}
+</article>

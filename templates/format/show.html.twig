@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ format.title }} — Les Flamants Bleus{% endblock %}
+{% block description %}{{ format.description ? format.description|slice(0, 155) : parent() }}{% endblock %}
+
+{% block main %}
+    <article class="format-detail">
+        {% if format.logoPath %}
+            <img class="format-logo" src="{{ logo_url(format.logoPath) }}" alt="">
+        {% endif %}
+        <h1 class="page-title">{{ format.title }}</h1>
+        {% if format.description %}
+            <div class="prose">{{ format.description|nl2br }}</div>
+        {% endif %}
+    </article>
+
+    <section class="agenda" aria-labelledby="agenda-title">
+        <h2 id="agenda-title">Prochaines dates</h2>
+        {% for row in rows %}
+            {{ include('_event_card.html.twig', {event: row.event, format: null}) }}
+        {% else %}
+            <p class="empty">Pas de date prévue pour ce format en ce moment.</p>
+        {% endfor %}
+    </section>
+
+    <p><a href="{{ path('formats') }}">← Tous les formats</a></p>
+{% endblock %}

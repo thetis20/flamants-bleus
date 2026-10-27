@@ -1,0 +1,22 @@
+security:
+    providers:
+        members:
+            id: App\Security\MemberUserProvider
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler(/|$)|(_wdt|assets|build)/)
+            security: false
+        main:
+            lazy: true
+            provider: members
+            custom_authenticators:
+                - App\Security\GoogleAuthenticator
+            entry_point: App\Security\GoogleAuthenticator
+            logout:
+                path: logout
+                target: home
+                enable_csrf: true
+
+    access_control:
+        - { path: ^/admin, roles: ROLE_MEMBER }

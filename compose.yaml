@@ -1,0 +1,18 @@
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "8000:8080"
+    volumes:
+      - .:/app
+    environment:
+      FIRESTORE_EMULATOR_HOST: firestore:8080
+      OPCACHE_VALIDATE: "1"
+    depends_on:
+      - firestore
+
+  firestore:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    command: gcloud emulators firestore start --host-port=0.0.0.0:8080 --project=flamants-bleus-dev
