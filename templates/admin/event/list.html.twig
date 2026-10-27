@@ -15,6 +15,7 @@
                     <td>{{ event.price ?: '—' }}</td>
                     <td>{% if event.bookingUrl %}<a href="{{ event.bookingUrl }}" target="_blank" rel="noopener">lien</a>{% elseif upcoming %}<a class="to-fill" href="{{ path('admin_event_edit', {id: event.id}) }}">à ajouter</a>{% else %}—{% endif %}</td>
                     <td class="actions">
+                        <a href="{{ path('admin_event_edit', {id: event.id}) }}">Modifier</a>
                         <a href="{{ path('admin_event_duplicate', {id: event.id}) }}">Dupliquer</a>
                         {{ include('admin/_delete.html.twig', {
                             action: path('admin_event_delete', {id: event.id}),

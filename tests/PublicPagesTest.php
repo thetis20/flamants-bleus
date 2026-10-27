@@ -57,6 +57,18 @@ final class PublicPagesTest extends WebTestCase
         self::assertSelectorNotExists('.event-card a.button');
     }
 
+    public function testEditLinkIsShownToMembersOnly(): void
+    {
+        $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+
+        $this->client->request('GET', '/');
+        self::assertSelectorNotExists('.member-edit');
+
+        $this->loginAsMember();
+        $this->client->request('GET', '/');
+        self::assertSelectorExists('.member-edit');
+    }
+
     public function testEmptyAgendaShowsAMessage(): void
     {
         $this->client->request('GET', '/');

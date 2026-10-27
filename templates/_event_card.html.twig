@@ -18,6 +18,9 @@
         {% else %}
             <span class="booking-soon">Réservations bientôt ouvertes</span>
         {% endif %}
+        {% if is_granted('ROLE_MEMBER') %}
+            <a class="member-edit" href="{{ path('admin_event_edit', {id: event.id, retour: app.request.pathInfo}) }}">✎ Modifier</a>
+        {% endif %}
     </div>
 
     {% if format %}

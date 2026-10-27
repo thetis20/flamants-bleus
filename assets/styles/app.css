@@ -162,6 +162,18 @@ body.public {
     opacity: .9;
 }
 
+.member-edit {
+    display: inline-block;
+    margin-left: .6rem;
+    padding: .3em .8em;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .14);
+    font-size: .85rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+.member-edit:hover { background: var(--white); color: var(--blue-deep); }
+
 .event-format { display: block; width: 140px; text-align: center; text-decoration: none; }
 .event-format img { max-height: 110px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .3)); transition: transform .2s ease; }
 .event-format:hover img { transform: rotate(-3deg) scale(1.05); }
@@ -194,6 +206,8 @@ body.public {
 
 .login-box { max-width: 460px; margin: 2rem auto; text-align: center; background: var(--card); border-radius: var(--radius); padding: 2rem; }
 .login-box .page-title { margin-top: 0; }
+.dev-login { display: flex; flex-direction: column; gap: .75rem; }
+.dev-login input { padding: .6rem .8rem; border-radius: 8px; border: 0; font: inherit; }
 
 .site-footer { text-align: center; padding: 2rem 1rem 1.5rem; }
 .site-footer .follow {
@@ -209,6 +223,7 @@ body.public {
 
 body.admin { background: #f4f6fb; color: var(--ink); }
 .admin a { color: var(--blue); }
+.admin a.button { color: var(--white); }
 
 .admin-header {
     display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;

@@ -45,6 +45,84 @@ final class AdminTest extends WebTestCase
         self::assertSame('https://billetterie.example/noel', $events[0]->bookingUrl);
     }
 
+    public function testMemberEditsAnEventFromTheList(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $this->loginAsMember();
+
+        $crawler = $this->client->request('GET', '/admin/dates');
+        $this->client->click($crawler->selectLink('Modifier')->link());
+        $this->client->submitForm('Enregistrer', [
+            'event[venue]' => 'Digital Village',
+            'event[bookingUrl]' => 'https://www.helloasso.com/associations/compagnie-les-flamants-bleus/evenements/cabaret',
+        ]);
+
+        self::assertResponseRedirects('/admin/dates');
+        $saved = $this->events()->find($event->id);
+        self::assertSame('Digital Village', $saved->venue);
+        self::assertSame('https://www.helloasso.com/associations/compagnie-les-flamants-bleus/evenements/cabaret', $saved->bookingUrl);
+        self::assertCount(1, $this->events()->upcoming(new \DateTimeImmutable(self::NOW)));
+    }
+
+    public function testEditFromThePublicSiteReturnsThere(): void
+    {
+        $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $this->loginAsMember();
+
+        $crawler = $this->client->request('GET', '/');
+        $this->client->click($crawler->selectLink('✎ Modifier')->link());
+        $this->client->submitForm('Enregistrer');
+
+        self::assertResponseRedirects('/');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.flash-success', 'enregistrée');
+    }
+
+    public function testExternalReturnIsIgnored(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $this->loginAsMember();
+
+        $this->client->request('GET', '/admin/dates/'.$event->id.'?retour=//evil.example');
+        $this->client->submitForm('Enregistrer');
+
+        self::assertResponseRedirects('/admin/dates');
+    }
+
+    public function testMemberEditsAFormatAndKeepsItsLogo(): void
+    {
+        $format = $this->givenFormat();
+        $format->logoPath = 'logos/cabaret.png';
+        $this->formats()->save($format);
+        $this->loginAsMember();
+
+        $crawler = $this->client->request('GET', '/admin/formats');
+        $this->client->click($crawler->selectLink('Modifier')->link());
+        $this->client->submitForm('Enregistrer', [
+            'format[title]' => 'Cabaret d\'improvisation',
+            'format[description]' => 'Un maître de cérémonie et vos idées.',
+        ]);
+
+        self::assertResponseRedirects('/admin/formats');
+        $saved = $this->formats()->find($format->id);
+        self::assertSame('Cabaret d\'improvisation', $saved->title);
+        self::assertSame('Un maître de cérémonie et vos idées.', $saved->description);
+        self::assertSame('logos/cabaret.png', $saved->logoPath);
+    }
+
+    public function testFormatEditedFromItsPageReturnsToItsNewAddress(): void
+    {
+        $format = $this->givenFormat();
+        $this->loginAsMember();
+
+        $crawler = $this->client->request('GET', '/formats/cabaret-impro');
+        $this->client->click($crawler->selectLink('✎ Modifier ce format')->link());
+        $this->client->submitForm('Enregistrer', ['format[slug]' => 'cabaret']);
+
+        self::assertResponseRedirects('/formats/cabaret');
+        self::assertSame('cabaret', $this->formats()->find($format->id)->slug);
+    }
+
     public function testDuplicateKeepsTheOriginal(): void
     {
         $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');

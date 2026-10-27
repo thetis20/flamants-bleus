@@ -17,6 +17,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/formats')]
 final class FormatController extends AbstractController
 {
+    use RedirectsBack;
+
     public function __construct(
         private FormatRepositoryInterface $formats,
         private LogoStorage $logos,
@@ -34,13 +36,13 @@ final class FormatController extends AbstractController
     #[Route('/nouveau', name: 'admin_format_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
-        return $this->edit($request, new Format(), 'Nouveau format');
+        return $this->edit($request, new Format(), 'Nouveau format', false);
     }
 
     #[Route('/{id}', name: 'admin_format_edit', methods: ['GET', 'POST'])]
     public function update(Request $request, string $id): Response
     {
-        return $this->edit($request, $this->find($id), 'Modifier le format');
+        return $this->edit($request, $this->find($id), 'Modifier le format', true);
     }
 
     #[Route('/{id}/supprimer', name: 'admin_format_delete', methods: ['POST'])]
@@ -64,7 +66,7 @@ final class FormatController extends AbstractController
         return $this->redirectToRoute('admin_formats');
     }
 
-    private function edit(Request $request, Format $format, string $heading): Response
+    private function edit(Request $request, Format $format, string $heading, bool $isEdit): Response
     {
         $form = $this->createForm(FormatType::class, $format);
         $form->handleRequest($request);
@@ -88,13 +90,18 @@ final class FormatController extends AbstractController
             $this->formats->save($format);
             $this->addFlash('success', \sprintf('« %s » enregistré.', $format->title));
 
-            return $this->redirectToRoute('admin_formats');
+            // The slug may have changed, so a return to the old public page could 404.
+            return $isEdit && str_starts_with($request->query->getString('retour'), '/formats/')
+                ? $this->redirectToRoute('format_show', ['slug' => $format->slug])
+                : $this->redirectBackOr($request, 'admin_formats');
         }
 
         return $this->render('admin/format/edit.html.twig', [
             'form' => $form,
             'format' => $format,
             'heading' => $heading,
+            'is_edit' => $isEdit,
+            'cancel_url' => $this->backPath($request) ?? $this->generateUrl('admin_formats'),
         ]);
     }
 

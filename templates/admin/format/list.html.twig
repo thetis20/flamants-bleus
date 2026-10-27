@@ -16,6 +16,7 @@
                         <td><a href="{{ path('admin_format_edit', {id: format.id}) }}">{{ format.title }}</a></td>
                         <td><a href="{{ path('format_show', {slug: format.slug}) }}" target="_blank">/formats/{{ format.slug }}</a></td>
                         <td class="actions">
+                            <a href="{{ path('admin_format_edit', {id: format.id}) }}">Modifier</a>
                             {{ include('admin/_delete.html.twig', {
                                 action: path('admin_format_delete', {id: format.id}),
                                 token_id: 'delete-format-' ~ format.id,

@@ -13,7 +13,17 @@
         {{ form_rest(form) }}
         <div class="form-actions">
             <button type="submit" class="button">Enregistrer</button>
-            <a href="{{ path('admin_formats') }}">Annuler</a>
+            <a href="{{ cancel_url }}">Annuler</a>
         </div>
     {{ form_end(form) }}
+
+    {% if is_edit %}
+        <p class="danger-zone">
+            {{ include('admin/_delete.html.twig', {
+                action: path('admin_format_delete', {id: format.id}),
+                token_id: 'delete-format-' ~ format.id,
+                confirm: 'Supprimer le format « ' ~ format.title ~ ' » ?',
+            }) }}
+        </p>
+    {% endif %}
 {% endblock %}

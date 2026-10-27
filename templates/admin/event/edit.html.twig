@@ -9,7 +9,17 @@
         {{ form_widget(form) }}
         <div class="form-actions">
             <button type="submit" class="button">Enregistrer</button>
-            <a href="{{ path('admin_events') }}">Annuler</a>
+            <a href="{{ cancel_url }}">Annuler</a>
         </div>
     {{ form_end(form) }}
+
+    {% if is_edit %}
+        <p class="danger-zone">
+            {{ include('admin/_delete.html.twig', {
+                action: path('admin_event_delete', {id: event.id}),
+                token_id: 'delete-event-' ~ event.id,
+                confirm: 'Supprimer « ' ~ event.title ~ ' » ?',
+            }) }}
+        </p>
+    {% endif %}
 {% endblock %}
