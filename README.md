@@ -16,7 +16,9 @@ docker compose exec app bin/console app:load-demo   # dates et formats du flyer
 
 Le site répond sur http://localhost:8000. Les données vont dans un émulateur Firestore, effacé à chaque redémarrage.
 
-Pour tester la connexion, créer `.env.local` (jamais commité) avec `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (client OAuth de dev, voir `docs/deploy-gcp.md` §6) et `ADMIN_BOOTSTRAP_EMAIL=<votre adresse Gmail>`.
+Espace membres en local : http://localhost:8000/connexion/dev, saisir n'importe quelle adresse (ajoutée aux membres au passage). Cette page n'existe qu'en dev.
+
+Pour tester la vraie connexion Google, créer `.env.local` (jamais commité) avec `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (client OAuth de dev, voir `docs/deploy-gcp.md` §6) et `ADMIN_BOOTSTRAP_EMAIL=<votre adresse Gmail>`.
 
 ## Tests
 

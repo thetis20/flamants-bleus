@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion dev — Les Flamants Bleus{% endblock %}
+
+{% block main %}
+    <section class="login-box">
+        <h1 class="page-title">Connexion dev</h1>
+        <p>Environnement de développement uniquement : connexion sans Google. L'adresse est ajoutée aux membres si besoin.</p>
+        <form method="post" class="dev-login">
+            <input type="hidden" name="_token" value="{{ csrf_token('dev-login') }}">
+            <input type="email" name="email" required placeholder="prenom@gmail.com" list="dev-members" aria-label="Adresse email">
+            <datalist id="dev-members">
+                {% for member in members %}<option value="{{ member.email }}">{% endfor %}
+            </datalist>
+            <button type="submit" class="button">Se connecter</button>
+        </form>
+    </section>
+{% endblock %}

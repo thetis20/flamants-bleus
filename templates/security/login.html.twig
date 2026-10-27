@@ -10,5 +10,8 @@
             <p class="flash flash-error">{{ error.messageKey|replace(error.messageData) }}</p>
         {% endif %}
         <a class="button button-google" href="{{ path('connect_google') }}">Se connecter avec Google</a>
+        {% if app.environment == 'dev' %}
+            <p class="small"><a href="{{ path('dev_login') }}">Connexion dev sans Google</a></p>
+        {% endif %}
     </section>
 {% endblock %}
