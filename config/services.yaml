@@ -15,7 +15,8 @@ services:
 
     Google\Cloud\Firestore\FirestoreClient:
         arguments:
-            - { projectId: '%env(GOOGLE_CLOUD_PROJECT)%' }
+            # grpc segfaults under FrankenPHP's threads (signal 11 on Cloud Run).
+            - { projectId: '%env(GOOGLE_CLOUD_PROJECT)%', transport: rest }
 
     App\Repository\FormatRepositoryInterface: '@App\Repository\Firestore\FirestoreFormatRepository'
     App\Repository\EventRepositoryInterface: '@App\Repository\Firestore\FirestoreEventRepository'

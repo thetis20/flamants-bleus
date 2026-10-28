@@ -5,7 +5,7 @@ WORKDIR /app
 # grpc builds from source (~15 min); a parallel build on every core froze Docker Desktop.
 ARG IPE_PROCESSOR_COUNT=3
 RUN IPE_PROCESSOR_COUNT=${IPE_PROCESSOR_COUNT} install-php-extensions grpc
-RUN install-php-extensions intl opcache zip gd \
+RUN install-php-extensions bcmath intl opcache zip gd \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
