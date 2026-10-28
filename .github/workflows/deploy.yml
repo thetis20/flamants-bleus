@@ -12,7 +12,6 @@ concurrency:
 env:
   REGION: europe-west1
   SERVICE: flamants-bleus
-  IMAGE: europe-west1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/site/flamants-bleus
 
 jobs:
   test:
@@ -31,6 +30,10 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
+    # Holds the GCP_* variables; they are invisible to a job outside this environment.
+    environment: prod
+    env:
+      IMAGE: europe-west1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/site/flamants-bleus
     permissions:
       contents: read
       id-token: write

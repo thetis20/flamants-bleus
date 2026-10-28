@@ -117,7 +117,7 @@ unset value
 
 ## 8. Variables GitHub
 
-Dépôt GitHub → Settings → Secrets and variables → Actions → onglet **Variables** (ce ne sont pas des secrets). Cette commande affiche les valeurs à recopier :
+Dépôt GitHub → Settings → Environments → créer `prod` → **Environment variables** (ce ne sont pas des secrets ; le job de déploiement ne voit que les variables de cet environnement ou du dépôt). Cette commande affiche les valeurs à recopier :
 
 ```bash
 PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format='value(projectNumber)')
