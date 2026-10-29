@@ -6,10 +6,14 @@ use App\Model\Format;
 use App\Repository\FormatRepositoryInterface;
 use Google\Cloud\Firestore\DocumentSnapshot;
 use Google\Cloud\Firestore\FirestoreClient;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class FirestoreFormatRepository implements FormatRepositoryInterface
+final class FirestoreFormatRepository implements FormatRepositoryInterface, ResetInterface
 {
     private const COLLECTION = 'formats';
+
+    /** A page asks for every format more than once (agenda, then the list); one read per request is enough. */
+    private ?array $all = null;
 
     public function __construct(private FirestoreClient $db)
     {
@@ -17,13 +21,22 @@ final class FirestoreFormatRepository implements FormatRepositoryInterface
 
     public function all(): array
     {
+        if (null !== $this->all) {
+            return $this->all;
+        }
+
         $formats = [];
         foreach ($this->db->collection(self::COLLECTION)->documents() as $doc) {
             $formats[] = $this->hydrate($doc);
         }
         usort($formats, fn (Format $a, Format $b) => strcasecmp($a->title, $b->title));
 
-        return $formats;
+        return $this->all = $formats;
+    }
+
+    public function reset(): void
+    {
+        $this->all = null;
     }
 
     public function find(string $id): ?Format
@@ -44,6 +57,7 @@ final class FirestoreFormatRepository implements FormatRepositoryInterface
 
     public function save(Format $format): void
     {
+        $this->reset();
         $this->db->collection(self::COLLECTION)->document($format->id)->set([
             'title' => $format->title,
             'slug' => $format->slug,
@@ -54,6 +68,7 @@ final class FirestoreFormatRepository implements FormatRepositoryInterface
 
     public function delete(string $id): void
     {
+        $this->reset();
         $this->db->collection(self::COLLECTION)->document($id)->delete();
     }
 

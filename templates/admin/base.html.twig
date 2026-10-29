@@ -6,7 +6,7 @@
 {% block body %}
     <header class="admin-header">
         <a href="{{ path('home') }}" class="brand-small" title="Voir le site">
-            <img src="{{ asset('images/logo.png') }}" alt="Les Flamants Bleus" width="64" height="56">
+            <img src="{{ asset('images/logo.webp') }}" alt="Les Flamants Bleus" width="64" height="56">
         </a>
         <nav class="admin-nav" aria-label="Administration">
             {% set section = app.current_route|split('_')[1] ?? '' %}

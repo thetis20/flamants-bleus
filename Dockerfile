@@ -9,7 +9,7 @@ RUN install-php-extensions bcmath intl opcache zip gd \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY docker/Caddyfile /etc/caddy/Caddyfile
+COPY docker/Caddyfile /etc/frankenphp/Caddyfile
 COPY docker/php.ini "$PHP_INI_DIR/conf.d/zz-app.ini"
 
 ENV SERVER_NAME=":8080" \
@@ -22,8 +22,11 @@ ENV APP_ENV=dev
 
 FROM base AS prod
 
+# Worker mode boots the kernel once and keeps the Firestore connection and token between requests.
+# Default is 2 workers per core seen, which can be the host's cores and overflow the 512Mi instance.
 ENV APP_ENV=prod \
-    APP_DEBUG=0
+    APP_DEBUG=0 \
+    FRANKENPHP_CONFIG="worker /app/public/index.php 4"
 
 COPY composer.json composer.lock symfony.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-progress

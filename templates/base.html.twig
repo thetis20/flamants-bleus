@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Les Flamants Bleus — troupe d'improvisation théâtrale{% endblock %}</title>
         <meta name="description" content="{% block description %}Les Flamants Bleus, troupe amateure d'improvisation théâtrale : prochains spectacles, formats et réservations.{% endblock %}">
-        <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+        <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+        <link rel="preload" href="{{ asset('fonts/league-spartan-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="{{ asset('fonts/lato-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
         <meta property="og:title" content="{{ block('title') }}">
         <meta property="og:description" content="{{ block('description') }}">
         <meta property="og:image" content="{{ absolute_url(asset('images/logo.png')) }}">
@@ -15,7 +17,7 @@
         {% block body %}
             <header class="site-header">
                 <a href="{{ path('home') }}" class="brand">
-                    <img src="{{ asset('images/logo.png') }}" alt="Les Flamants Bleus" width="480" height="416">
+                    <img src="{{ asset('images/logo.webp') }}" alt="Les Flamants Bleus" width="240" height="208" fetchpriority="high">
                 </a>
                 {% if instagram_url or facebook_url %}
                     <ul class="socials" aria-label="Nos réseaux sociaux">

@@ -6,10 +6,14 @@ use App\Model\Venue;
 use App\Repository\VenueRepositoryInterface;
 use Google\Cloud\Firestore\DocumentSnapshot;
 use Google\Cloud\Firestore\FirestoreClient;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class FirestoreVenueRepository implements VenueRepositoryInterface
+final class FirestoreVenueRepository implements VenueRepositoryInterface, ResetInterface
 {
     private const COLLECTION = 'venues';
+
+    /** The home page reads every venue twice (agenda, then the partners); one read per request is enough. */
+    private ?array $all = null;
 
     public function __construct(private FirestoreClient $db)
     {
@@ -17,13 +21,22 @@ final class FirestoreVenueRepository implements VenueRepositoryInterface
 
     public function all(): array
     {
+        if (null !== $this->all) {
+            return $this->all;
+        }
+
         $venues = [];
         foreach ($this->db->collection(self::COLLECTION)->documents() as $doc) {
             $venues[] = $this->hydrate($doc);
         }
         usort($venues, fn (Venue $a, Venue $b) => strcasecmp($a->name, $b->name));
 
-        return $venues;
+        return $this->all = $venues;
+    }
+
+    public function reset(): void
+    {
+        $this->all = null;
     }
 
     public function onHome(): array
@@ -49,6 +62,7 @@ final class FirestoreVenueRepository implements VenueRepositoryInterface
 
     public function save(Venue $venue): void
     {
+        $this->reset();
         $this->db->collection(self::COLLECTION)->document($venue->id)->set([
             'name' => $venue->name,
             'slug' => $venue->slug,
@@ -61,6 +75,7 @@ final class FirestoreVenueRepository implements VenueRepositoryInterface
 
     public function delete(string $id): void
     {
+        $this->reset();
         $this->db->collection(self::COLLECTION)->document($id)->delete();
     }
 

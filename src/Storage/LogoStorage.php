@@ -22,7 +22,11 @@ final class LogoStorage
         $path = \sprintf('logos/%s-%s.%s', $slug, bin2hex(random_bytes(4)), $file->guessExtension() ?? 'bin');
         $stream = fopen($file->getPathname(), 'r');
         try {
-            $this->filesystem->writeStream($path, $stream, ['mimetype' => $file->getMimeType()]);
+            // The random suffix makes every upload a new URL, so browsers can keep it forever.
+            $this->filesystem->writeStream($path, $stream, [
+                'mimetype' => $file->getMimeType(),
+                'metadata' => ['cacheControl' => 'public, max-age=31536000, immutable'],
+            ]);
         } finally {
             \is_resource($stream) && fclose($stream);
         }
