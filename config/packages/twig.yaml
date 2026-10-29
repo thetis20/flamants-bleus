@@ -6,6 +6,7 @@ twig:
     globals:
         instagram_url: '%app.instagram_url%'
         facebook_url: '%app.facebook_url%'
+        contact_email: 'contact@cielesflamantsbleus.fr'
 
 when@test:
     twig:

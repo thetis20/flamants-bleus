@@ -217,6 +217,13 @@ final class PublicPagesTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
+    public function testEveryPageGivesTheContactEmail(): void
+    {
+        $this->client->request('GET', '/formats');
+
+        self::assertSelectorTextContains('.site-footer a[href="mailto:contact@cielesflamantsbleus.fr"]', 'contact@cielesflamantsbleus.fr');
+    }
+
     public function testUnknownFormatIsNotFound(): void
     {
         $this->client->request('GET', '/formats/inconnu');
