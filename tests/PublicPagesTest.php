@@ -193,7 +193,7 @@ final class PublicPagesTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Blue Monkeys');
         self::assertSelectorTextContains('.venue-address', '49100 Angers');
-        self::assertSelectorExists('.venue-address a[href^="https://www.google.com/maps/search/"]');
+        self::assertSelectorExists('.venue-address a[href^="https://www.openstreetmap.org/search?query="]');
         self::assertSelectorExists('a.venue-website[href="https://bluemonkeys.example"]');
         self::assertSame(['Cabaret au Blue'], $crawler->filter('.event-title')->each(fn ($node) => $node->text()));
     }

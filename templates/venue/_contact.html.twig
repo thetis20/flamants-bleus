@@ -2,7 +2,7 @@
 {% if venue.address %}
     <address class="venue-address">
         {{ venue.address|nl2br }}<br>
-        <a href="https://www.google.com/maps/search/?api=1&amp;query={{ venue.address|replace({"\n": ' '})|url_encode }}" rel="noopener" target="_blank">Voir sur la carte<span class="sr-only"> (nouvel onglet)</span></a>
+        <a href="https://www.openstreetmap.org/search?query={{ venue.address|replace({"\n": ' '})|url_encode }}" rel="noopener" target="_blank">Voir sur la carte<span class="sr-only"> (nouvel onglet)</span></a>
     </address>
 {% endif %}
 {% if venue.websiteUrl %}
