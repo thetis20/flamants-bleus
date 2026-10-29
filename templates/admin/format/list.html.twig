@@ -7,6 +7,7 @@
     </div>
 
     {% if formats %}
+        <div class="table-scroll" role="region" aria-label="Formats" tabindex="0">
         <table class="table">
             <thead><tr><th>Logo</th><th>Titre</th><th>Page</th><th></th></tr></thead>
             <tbody>
@@ -14,7 +15,7 @@
                     <tr>
                         <td>{% if format.logoPath %}<img class="thumb" src="{{ logo_url(format.logoPath) }}" alt="">{% endif %}</td>
                         <td><a href="{{ path('admin_format_edit', {id: format.id}) }}">{{ format.title }}</a></td>
-                        <td><a href="{{ path('format_show', {slug: format.slug}) }}" target="_blank">/formats/{{ format.slug }}</a></td>
+                        <td><a href="{{ path('format_show', {slug: format.slug}) }}" target="_blank">/formats/{{ format.slug }}<span class="sr-only"> (nouvel onglet)</span></a></td>
                         <td class="actions">
                             <a href="{{ path('admin_format_edit', {id: format.id}) }}">Modifier</a>
                             {{ include('admin/_delete.html.twig', {
@@ -27,6 +28,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% else %}
         <p class="empty">Aucun format pour l'instant.</p>
     {% endif %}

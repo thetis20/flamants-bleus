@@ -14,6 +14,7 @@
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     </head>
     <body class="{% block body_class %}public{% endblock %}">
+        <a class="skip-link" href="#contenu">Aller au contenu</a>
         {% block body %}
             <header class="site-header">
                 <a href="{{ path('home') }}" class="brand">
@@ -22,16 +23,16 @@
                 {% if instagram_url or facebook_url %}
                     <ul class="socials" aria-label="Nos réseaux sociaux">
                         {% if instagram_url %}
-                            <li><a href="{{ instagram_url }}" rel="noopener" target="_blank">{{ include('_icon_instagram.svg.twig') }}<span>cieflamantsbleus</span></a></li>
+                            <li><a href="{{ instagram_url }}" rel="noopener" target="_blank">{{ include('_icon_instagram.svg.twig') }}<span class="social-label">cieflamantsbleus</span><span class="sr-only"> (nouvel onglet)</span></a></li>
                         {% endif %}
                         {% if facebook_url %}
-                            <li><a href="{{ facebook_url }}" rel="noopener" target="_blank">{{ include('_icon_facebook.svg.twig') }}<span>Les Flamants Bleus</span></a></li>
+                            <li><a href="{{ facebook_url }}" rel="noopener" target="_blank">{{ include('_icon_facebook.svg.twig') }}<span class="social-label">Les Flamants Bleus</span><span class="sr-only"> (nouvel onglet)</span></a></li>
                         {% endif %}
                     </ul>
                 {% endif %}
             </header>
 
-            <main class="site-main">
+            <main class="site-main" id="contenu" tabindex="-1">
                 {% for type, messages in app.flashes %}
                     {% for message in messages %}
                         <p class="flash flash-{{ type }}" role="status">{{ message }}</p>

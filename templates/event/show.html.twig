@@ -5,7 +5,7 @@
 
 {% block main %}
     <h1 class="page-title">{{ event.title }}</h1>
-    {{ include('_event_card.html.twig', {event: event, format: null, venue: venue, past: past}) }}
+    {{ include('_event_card.html.twig', {event: event, format: null, venue: venue, past: past, heading: 'h2'}) }}
 
     {% if venue and (venue.address or venue.websiteUrl) %}
         <section class="format-detail venue-detail" aria-labelledby="venue-title">

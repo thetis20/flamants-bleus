@@ -1,13 +1,15 @@
-{# expects: event, format (nullable), venue (nullable), past (optional) #}
+{# expects: event, format (nullable), venue (nullable), past (optional), heading (optional, h3 by default) #}
+{% set heading = heading|default('h3') %}
 <article class="event-card">
     <time class="date-tile" datetime="{{ event.startsAt|date('c') }}">
-        <span class="month">{{ event.startsAt|format_date(pattern: 'MMMM', locale: 'fr')|upper }}</span>
-        <span class="day">{{ event.startsAt|date('d') }}</span>
-        <span class="weekday">{{ event.startsAt|format_date(pattern: 'EEE', locale: 'fr')|trim('.')|capitalize }}</span>
+        <span class="month" aria-hidden="true">{{ event.startsAt|format_date(pattern: 'MMMM', locale: 'fr')|upper }}</span>
+        <span class="day" aria-hidden="true">{{ event.startsAt|date('d') }}</span>
+        <span class="weekday" aria-hidden="true">{{ event.startsAt|format_date(pattern: 'EEE', locale: 'fr')|trim('.')|capitalize }}</span>
+        <span class="sr-only">{{ event.startsAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }}</span>
     </time>
 
     <div class="event-body">
-        <h3 class="event-title"><a href="{{ path('event_show', {id: event.id}) }}">{{ event.title }}</a></h3>
+        <{{ heading }} class="event-title"><a href="{{ path('event_show', {id: event.id}) }}">{{ event.title }}</a></{{ heading }}>
         <ul class="event-meta">
             <li><span class="pin" aria-hidden="true"></span><span class="sr-only">Lieu : </span>{% if venue|default(null) %}<a href="{{ path('venue_show', {slug: venue.slug}) }}">{{ venue.name }}</a>{% else %}{{ event.venue }}{% endif %}</li>
             <li><span class="clock" aria-hidden="true"></span><span class="sr-only">Heure : </span>{{ event.startsAt|date('G') }}h{{ event.startsAt|date('i') != '00' ? event.startsAt|date('i') }}</li>
@@ -16,19 +18,19 @@
         {% if past|default(false) %}
             <span class="booking-soon">Cette date est passée</span>
         {% elseif event.bookingUrl %}
-            <a class="button" href="{{ event.bookingUrl }}" rel="noopener" target="_blank">Réserver</a>
+            <a class="button" href="{{ event.bookingUrl }}" rel="noopener" target="_blank">Réserver<span class="sr-only"> pour {{ event.title }}, le {{ event.startsAt|format_date(pattern: 'd MMMM', locale: 'fr') }} (nouvel onglet)</span></a>
         {% else %}
             <span class="booking-soon">Réservations bientôt ouvertes</span>
         {% endif %}
         {% if is_granted('ROLE_MEMBER') %}
-            <a class="member-edit" href="{{ path('admin_event_edit', {id: event.id, retour: app.request.pathInfo}) }}">✎ Modifier</a>
+            <a class="member-edit" href="{{ path('admin_event_edit', {id: event.id, retour: app.request.pathInfo}) }}"><span aria-hidden="true">✎ </span>Modifier<span class="sr-only"> {{ event.title }}</span></a>
         {% endif %}
     </div>
 
     {% if format %}
-        <a class="event-format" href="{{ path('format_show', {slug: format.slug}) }}" title="Découvrir le format {{ format.title }}">
+        <a class="event-format" href="{{ path('format_show', {slug: format.slug}) }}">
             {% if format.logoPath %}
-                <img src="{{ logo_url(format.logoPath) }}" alt="{{ format.title }}" loading="lazy">
+                <img src="{{ logo_url(format.logoPath) }}" alt="Format {{ format.title }}" loading="lazy">
             {% else %}
                 <span class="format-name">{{ format.title }}</span>
             {% endif %}

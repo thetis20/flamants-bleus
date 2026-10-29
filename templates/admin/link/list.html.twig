@@ -8,6 +8,7 @@
     <p class="hint">Un lien suivi (par exemple le QR code du flyer ou le lien de la bio Instagram) compte les personnes qui arrivent sur le site par ce chemin, puis les amène sur la page choisie.</p>
 
     {% if links %}
+        <div class="table-scroll" role="region" aria-label="Liens suivis" tabindex="0">
         <table class="table">
             <thead><tr><th>Libellé</th><th>Lien</th><th>Arrivée</th><th class="num">Visites</th></tr></thead>
             <tbody>
@@ -21,6 +22,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% else %}
         <p class="empty">Aucun lien suivi pour l'instant.</p>
     {% endif %}

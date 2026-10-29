@@ -18,7 +18,7 @@
     </dl>
 
     <h2>Visites par jour</h2>
-    <div class="bars" role="img" aria-label="Visites par jour sur les 30 derniers jours">
+    <div class="bars" role="img" aria-label="Visites par jour sur les 30 derniers jours : {{ period_total }} au total, {{ max }} au maximum sur une journée">
         {% for d in days %}
             <div class="bar" style="--h: {{ (d.count / max * 100)|round }}%" title="{{ d.day|format_date(pattern: 'EEE d MMM', locale: 'fr') }} : {{ d.count }}">
                 <span class="bar-count">{{ d.count ?: '' }}</span>

@@ -10,7 +10,7 @@
         {% endif %}
         <h1 class="page-title">{{ venue.name }}</h1>
         {% if is_granted('ROLE_MEMBER') %}
-            <p><a class="member-edit" href="{{ path('admin_venue_edit', {id: venue.id, retour: app.request.pathInfo}) }}">✎ Modifier ce lieu</a></p>
+            <p><a class="member-edit" href="{{ path('admin_venue_edit', {id: venue.id, retour: app.request.pathInfo}) }}"><span aria-hidden="true">✎ </span>Modifier ce lieu</a></p>
         {% endif %}
         {{ include('venue/_contact.html.twig') }}
     </article>

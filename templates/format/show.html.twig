@@ -10,7 +10,7 @@
         {% endif %}
         <h1 class="page-title">{{ format.title }}</h1>
         {% if is_granted('ROLE_MEMBER') %}
-            <p><a class="member-edit" href="{{ path('admin_format_edit', {id: format.id, retour: app.request.pathInfo}) }}">✎ Modifier ce format</a></p>
+            <p><a class="member-edit" href="{{ path('admin_format_edit', {id: format.id, retour: app.request.pathInfo}) }}"><span aria-hidden="true">✎ </span>Modifier ce format</a></p>
         {% endif %}
         {% if format.description %}
             <div class="prose">{{ format.description|nl2br }}</div>
