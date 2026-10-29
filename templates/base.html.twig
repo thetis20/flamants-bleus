@@ -5,12 +5,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Les Flamants Bleus — troupe d'improvisation théâtrale{% endblock %}</title>
         <meta name="description" content="{% block description %}Les Flamants Bleus, troupe amateure d'improvisation théâtrale : prochains spectacles, formats et réservations.{% endblock %}">
+        {% block robots %}{% endblock %}
         <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
         <link rel="preload" href="{{ asset('fonts/league-spartan-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="{{ asset('fonts/lato-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+        {% if app.current_route %}
+            {% set canonical = url(app.current_route, app.current_route_parameters) %}
+            <link rel="canonical" href="{{ canonical }}">
+            <meta property="og:url" content="{{ canonical }}">
+        {% endif %}
+        <meta property="og:type" content="website">
+        <meta property="og:locale" content="fr_FR">
+        <meta property="og:site_name" content="Les Flamants Bleus">
         <meta property="og:title" content="{{ block('title') }}">
         <meta property="og:description" content="{{ block('description') }}">
         <meta property="og:image" content="{{ absolute_url(asset('images/logo.png')) }}">
+        <meta name="twitter:card" content="summary">
+        {% block structured_data %}{% endblock %}
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     </head>
     <body class="{% block body_class %}public{% endblock %}">

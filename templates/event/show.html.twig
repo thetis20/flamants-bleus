@@ -2,10 +2,11 @@
 
 {% block title %}{{ event.title }} — {{ event.startsAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }} — Les Flamants Bleus{% endblock %}
 {% block description %}{{ format and format.description ? format.description|slice(0, 155) : parent() }}{% endblock %}
+{% block robots %}{% if past %}<meta name="robots" content="noindex">{% endif %}{% endblock %}
 
 {% block main %}
     <h1 class="page-title">{{ event.title }}</h1>
-    {{ include('_event_card.html.twig', {event: event, format: null, venue: venue, past: past, heading: 'h2'}) }}
+    {{ include('_event_card.html.twig', {event: event, format: null, data_format: format, venue: venue, past: past, heading: 'h2'}) }}
 
     {% if venue and (venue.address or venue.websiteUrl) %}
         <section class="format-detail venue-detail" aria-labelledby="venue-title">

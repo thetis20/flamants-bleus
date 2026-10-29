@@ -1,6 +1,10 @@
-{# expects: event, format (nullable), venue (nullable), past (optional), heading (optional, h3 by default) #}
+{# expects: event, format (nullable), venue (nullable), past (optional), heading (optional, h3 by default),
+   data_format (optional: the event's format for search engines when the card does not show it) #}
 {% set heading = heading|default('h3') %}
 <article class="event-card">
+    {% if not past|default(false) %}
+        {{ include('_event_jsonld.html.twig', {format: data_format|default(format)}) }}
+    {% endif %}
     <time class="date-tile" datetime="{{ event.startsAt|date('c') }}">
         <span class="month" aria-hidden="true">{{ event.startsAt|format_date(pattern: 'MMMM', locale: 'fr')|upper }}</span>
         <span class="day" aria-hidden="true">{{ event.startsAt|date('d') }}</span>

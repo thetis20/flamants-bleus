@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>{{ url('home') }}</loc></url>
+    <url><loc>{{ url('formats') }}</loc></url>
+{% for format in formats %}
+    <url><loc>{{ url('format_show', {slug: format.slug}) }}</loc></url>
+{% endfor %}
+{% for venue in venues %}
+    <url><loc>{{ url('venue_show', {slug: venue.slug}) }}</loc></url>
+{% endfor %}
+{% for row in rows %}
+    <url><loc>{{ url('event_show', {id: row.event.id}) }}</loc></url>
+{% endfor %}
+</urlset>

@@ -1,5 +1,22 @@
 {% extends 'base.html.twig' %}
 
+{% block structured_data %}
+    {% set same_as = [] %}
+    {% for profile in [instagram_url, facebook_url] %}
+        {% if profile %}{% set same_as = same_as|merge([profile]) %}{% endif %}
+    {% endfor %}
+    {% set troupe = {
+        '@context': 'https://schema.org',
+        '@type': 'PerformingGroup',
+        name: 'Les Flamants Bleus',
+        description: 'Troupe amateure d\'improvisation théâtrale',
+        url: url('home'),
+        logo: absolute_url(asset('images/logo.png')),
+        sameAs: same_as,
+    } %}
+    <script type="application/ld+json">{{ troupe|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw }}</script>
+{% endblock %}
+
 {% block main %}
     <section class="hero">
         <p class="kicker">La troupe amateure d'improvisation théâtrale</p>
