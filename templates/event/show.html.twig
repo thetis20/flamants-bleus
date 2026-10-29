@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ event.title }} — {{ event.startsAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }} — Les Flamants Bleus{% endblock %}
+{% block description %}{{ format and format.description ? format.description|slice(0, 155) : parent() }}{% endblock %}
+
+{% block main %}
+    <h1 class="page-title">{{ event.title }}</h1>
+    {{ include('_event_card.html.twig', {event: event, format: null, past: past}) }}
+
+    {% if format %}
+        <section class="format-detail" aria-labelledby="format-title">
+            {% if format.logoPath %}
+                <img class="format-logo" src="{{ logo_url(format.logoPath) }}" alt="">
+            {% endif %}
+            <h2 id="format-title" class="page-title">{{ format.title }}</h2>
+            {% if format.description %}
+                <div class="prose">{{ format.description|nl2br }}</div>
+            {% endif %}
+            <p><a href="{{ path('format_show', {slug: format.slug}) }}">Découvrir le format</a></p>
+        </section>
+    {% endif %}
+
+    <p><a href="{{ path('home') }}">← Toutes les dates</a></p>
+{% endblock %}

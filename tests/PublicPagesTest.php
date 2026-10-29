@@ -90,6 +90,53 @@ final class PublicPagesTest extends WebTestCase
         self::assertSame(['Doublage de novembre'], $crawler->filter('.event-title')->each(fn ($node) => $node->text()));
     }
 
+    public function testEventPageShowsTheDateAndRecallsItsFormat(): void
+    {
+        $cabaret = $this->givenFormat();
+        $cabaret->description = 'Des scènes improvisées sur vos thèmes.';
+        $this->formats()->save($cabaret);
+        $event = $this->givenEvent($cabaret, '2026-11-06 20:30', 'Cabaret de novembre');
+
+        $this->client->request('GET', '/dates/'.$event->id);
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Cabaret de novembre');
+        self::assertSelectorTextContains('.event-meta', 'Blue Monkey');
+        self::assertSelectorTextContains('.event-meta', '20h30');
+        self::assertSelectorTextContains('.format-detail h2', 'Cabaret d\'impro');
+        self::assertSelectorTextContains('.format-detail', 'Des scènes improvisées sur vos thèmes.');
+        self::assertSelectorExists('.format-detail a[href="/formats/cabaret-impro"]');
+    }
+
+    public function testPastEventPageSaysSoAndOffersNoBooking(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-10-23 20:00');
+        $event->bookingUrl = 'https://billetterie.example/cabaret';
+        $this->events()->save($event);
+
+        $this->client->request('GET', '/dates/'.$event->id);
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.booking-soon', 'Cette date est passée');
+        self::assertSelectorNotExists('.event-card a.button');
+    }
+
+    public function testUnknownEventIsNotFound(): void
+    {
+        $this->client->request('GET', '/dates/inconnu');
+
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testAgendaLinksEachEventToItsPage(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+
+        $this->client->request('GET', '/');
+
+        self::assertSelectorExists('.event-title a[href="/dates/'.$event->id.'"]');
+    }
+
     public function testUnknownFormatIsNotFound(): void
     {
         $this->client->request('GET', '/formats/inconnu');
