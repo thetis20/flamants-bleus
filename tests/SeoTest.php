@@ -31,6 +31,7 @@ final class SeoTest extends WebTestCase
         self::assertSame([
             'http://localhost/',
             'http://localhost/formats',
+            'http://localhost/mentions-legales',
             'http://localhost/formats/cabaret-impro',
             'http://localhost/lieux/blue-monkeys',
             'http://localhost/dates/'.$upcoming->id,

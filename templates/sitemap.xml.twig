@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url><loc>{{ url('home') }}</loc></url>
     <url><loc>{{ url('formats') }}</loc></url>
+    <url><loc>{{ url('legal') }}</loc></url>
 {% for format in formats %}
     <url><loc>{{ url('format_show', {slug: format.slug}) }}</loc></url>
 {% endfor %}

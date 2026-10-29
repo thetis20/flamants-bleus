@@ -224,6 +224,18 @@ final class PublicPagesTest extends WebTestCase
         self::assertSelectorTextContains('.site-footer a[href="mailto:contact@cielesflamantsbleus.fr"]', 'contact@cielesflamantsbleus.fr');
     }
 
+    public function testLegalNoticeIsLinkedFromEveryPageAndNamesPublisherAndHost(): void
+    {
+        $crawler = $this->client->request('GET', '/');
+        $this->client->click($crawler->filter('.site-footer')->selectLink('Mentions légales')->link());
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.prose', 'Compagnie Les Flamants Bleus');
+        self::assertSelectorTextContains('.prose', 'W491021452');
+        self::assertSelectorTextContains('.prose', 'Google Ireland Limited');
+        self::assertSelectorExists('.prose a[href="mailto:contact@cielesflamantsbleus.fr"]');
+    }
+
     public function testUnknownFormatIsNotFound(): void
     {
         $this->client->request('GET', '/formats/inconnu');
