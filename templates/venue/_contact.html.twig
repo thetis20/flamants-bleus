@@ -1,0 +1,10 @@
+{# expects: venue #}
+{% if venue.address %}
+    <address class="venue-address">
+        {{ venue.address|nl2br }}<br>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query={{ venue.address|replace({"\n": ' '})|url_encode }}" rel="noopener" target="_blank">Voir sur la carte</a>
+    </address>
+{% endif %}
+{% if venue.websiteUrl %}
+    <p><a class="venue-website" href="{{ venue.websiteUrl }}" rel="noopener" target="_blank">Site du lieu</a></p>
+{% endif %}

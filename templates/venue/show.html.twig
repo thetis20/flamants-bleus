@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ venue.name }} — Les Flamants Bleus{% endblock %}
+{% block description %}Les Flamants Bleus jouent à {{ venue.name }}{{ venue.address ? ', ' ~ venue.address|replace({"\n": ', '}) }} : prochaines dates et réservations.{% endblock %}
+
+{% block main %}
+    <article class="format-detail venue-detail">
+        {% if venue.logoPath %}
+            <img class="format-logo" src="{{ logo_url(venue.logoPath) }}" alt="">
+        {% endif %}
+        <h1 class="page-title">{{ venue.name }}</h1>
+        {% if is_granted('ROLE_MEMBER') %}
+            <p><a class="member-edit" href="{{ path('admin_venue_edit', {id: venue.id, retour: app.request.pathInfo}) }}">✎ Modifier ce lieu</a></p>
+        {% endif %}
+        {{ include('venue/_contact.html.twig') }}
+    </article>
+
+    <section class="agenda" aria-labelledby="agenda-title">
+        <h2 id="agenda-title">Prochaines dates</h2>
+        {% for row in rows %}
+            {{ include('_event_card.html.twig', {event: row.event, format: row.format, venue: venue}) }}
+        {% else %}
+            <p class="empty">Pas de date prévue dans ce lieu en ce moment.</p>
+        {% endfor %}
+    </section>
+
+    <p><a href="{{ path('home') }}">← Toutes les dates</a></p>
+{% endblock %}

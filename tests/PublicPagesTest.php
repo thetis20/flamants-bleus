@@ -137,6 +137,86 @@ final class PublicPagesTest extends WebTestCase
         self::assertSelectorExists('.event-title a[href="/dates/'.$event->id.'"]');
     }
 
+    public function testHomeListsTheFormats(): void
+    {
+        $this->givenFormat();
+        $this->givenFormat('Doublage Improvisé', 'doublage-improvise');
+
+        $crawler = $this->client->request('GET', '/');
+
+        self::assertSame(
+            ['/formats/cabaret-impro', '/formats/doublage-improvise'],
+            $crawler->filter('#formats .format-tile')->each(fn ($node) => $node->attr('href')),
+        );
+    }
+
+    public function testEventCardLinksToItsVenue(): void
+    {
+        $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());
+
+        $this->client->request('GET', '/');
+
+        self::assertSelectorTextContains('.event-meta a[href="/lieux/blue-monkeys"]', 'Blue Monkeys');
+    }
+
+    public function testHomeShowsOnlyVenuesTickedForIt(): void
+    {
+        $this->givenVenue('Blue Monkeys', 'blue-monkeys', onHome: true);
+        $this->givenVenue('Salle des fêtes', 'salle-des-fetes');
+
+        $crawler = $this->client->request('GET', '/');
+
+        self::assertSame(['/lieux/blue-monkeys'], $crawler->filter('.partners a')->each(fn ($node) => $node->attr('href')));
+    }
+
+    public function testHomeHidesVenuesBlockWhenNoneIsTicked(): void
+    {
+        $this->givenVenue();
+
+        $this->client->request('GET', '/');
+
+        self::assertSelectorNotExists('.partners');
+    }
+
+    public function testVenuePageShowsItsAddressWebsiteAndOnlyItsEvents(): void
+    {
+        $venue = $this->givenVenue();
+        $venue->address = "12 rue de la Roë\n49100 Angers";
+        $venue->websiteUrl = 'https://bluemonkeys.example';
+        $this->venues()->save($venue);
+        $format = $this->givenFormat();
+        $this->givenEvent($format, '2026-11-20 20:00', 'Cabaret au Blue', $venue);
+        $this->givenEvent($format, '2026-11-06 20:00', 'Cabaret ailleurs', $this->givenVenue('Digital Village', 'digital-village'));
+
+        $crawler = $this->client->request('GET', '/lieux/blue-monkeys');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Blue Monkeys');
+        self::assertSelectorTextContains('.venue-address', '49100 Angers');
+        self::assertSelectorExists('.venue-address a[href^="https://www.google.com/maps/search/"]');
+        self::assertSelectorExists('a.venue-website[href="https://bluemonkeys.example"]');
+        self::assertSame(['Cabaret au Blue'], $crawler->filter('.event-title')->each(fn ($node) => $node->text()));
+    }
+
+    public function testEventPageRecallsItsVenueAddress(): void
+    {
+        $venue = $this->givenVenue();
+        $venue->address = '12 rue de la Roë, 49100 Angers';
+        $this->venues()->save($venue);
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $venue);
+
+        $this->client->request('GET', '/dates/'.$event->id);
+
+        self::assertSelectorTextContains('.venue-detail .venue-address', '12 rue de la Roë');
+    }
+
+    public function testUnknownVenueIsNotFound(): void
+    {
+        $this->client->request('GET', '/lieux/inconnu');
+
+        self::assertResponseStatusCodeSame(404);
+    }
+
     public function testUnknownFormatIsNotFound(): void
     {
         $this->client->request('GET', '/formats/inconnu');

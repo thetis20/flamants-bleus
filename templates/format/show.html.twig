@@ -20,11 +20,11 @@
     <section class="agenda" aria-labelledby="agenda-title">
         <h2 id="agenda-title">Prochaines dates</h2>
         {% for row in rows %}
-            {{ include('_event_card.html.twig', {event: row.event, format: null}) }}
+            {{ include('_event_card.html.twig', {event: row.event, format: null, venue: row.venue}) }}
         {% else %}
             <p class="empty">Pas de date prévue pour ce format en ce moment.</p>
         {% endfor %}
     </section>
 
-    <p><a href="{{ path('formats') }}">← Tous les formats</a></p>
+    <p><a href="{{ path('home', {_fragment: 'formats'}) }}">← Tous les formats</a></p>
 {% endblock %}

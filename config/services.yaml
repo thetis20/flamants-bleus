@@ -20,6 +20,7 @@ services:
 
     App\Repository\FormatRepositoryInterface: '@App\Repository\Firestore\FirestoreFormatRepository'
     App\Repository\EventRepositoryInterface: '@App\Repository\Firestore\FirestoreEventRepository'
+    App\Repository\VenueRepositoryInterface: '@App\Repository\Firestore\FirestoreVenueRepository'
     App\Repository\MemberRepositoryInterface: '@App\Repository\Firestore\FirestoreMemberRepository'
     App\Repository\TrackingLinkRepositoryInterface: '@App\Repository\Firestore\FirestoreTrackingLinkRepository'
 
@@ -60,6 +61,9 @@ when@test:
             public: true
         App\Repository\EventRepositoryInterface:
             class: App\Repository\InMemory\InMemoryEventRepository
+            public: true
+        App\Repository\VenueRepositoryInterface:
+            class: App\Repository\InMemory\InMemoryVenueRepository
             public: true
         App\Repository\MemberRepositoryInterface:
             class: App\Repository\InMemory\InMemoryMemberRepository

@@ -1,0 +1,10 @@
+{# expects: venue #}
+<a class="format-tile venue-tile" href="{{ path('venue_show', {slug: venue.slug}) }}">
+    {% if venue.logoPath %}
+        <span class="venue-logo"><img src="{{ logo_url(venue.logoPath) }}" alt="" loading="lazy"></span>
+    {% endif %}
+    <h3>{{ venue.name }}</h3>
+    {% if venue.address %}
+        <p>{{ venue.address|replace({"\n": ', '}) }}</p>
+    {% endif %}
+</a>

@@ -18,8 +18,10 @@ class Event
     #[Assert\NotBlank(message: 'Choisissez un format.')]
     public ?string $formatId = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 120)]
+    #[Assert\NotBlank(message: 'Choisissez un lieu.')]
+    public ?string $venueId = null;
+
+    /** Free-text venue of dates saved before venues were managed, shown until a venue is chosen. */
     public ?string $venue = null;
 
     #[Assert\Length(max: 60)]

@@ -1,4 +1,4 @@
-{# expects: event, format (nullable), past (optional) #}
+{# expects: event, format (nullable), venue (nullable), past (optional) #}
 <article class="event-card">
     <time class="date-tile" datetime="{{ event.startsAt|date('c') }}">
         <span class="month">{{ event.startsAt|format_date(pattern: 'MMMM', locale: 'fr')|upper }}</span>
@@ -9,7 +9,7 @@
     <div class="event-body">
         <h3 class="event-title"><a href="{{ path('event_show', {id: event.id}) }}">{{ event.title }}</a></h3>
         <ul class="event-meta">
-            <li><span class="pin" aria-hidden="true"></span><span class="sr-only">Lieu : </span>{{ event.venue }}</li>
+            <li><span class="pin" aria-hidden="true"></span><span class="sr-only">Lieu : </span>{% if venue|default(null) %}<a href="{{ path('venue_show', {slug: venue.slug}) }}">{{ venue.name }}</a>{% else %}{{ event.venue }}{% endif %}</li>
             <li><span class="clock" aria-hidden="true"></span><span class="sr-only">Heure : </span>{{ event.startsAt|date('G') }}h{{ event.startsAt|date('i') != '00' ? event.startsAt|date('i') }}</li>
             {% if event.price %}<li><span class="ticket" aria-hidden="true"></span><span class="sr-only">Prix : </span>{{ event.price }}</li>{% endif %}
         </ul>

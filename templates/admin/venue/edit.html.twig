@@ -1,0 +1,31 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block main %}
+    <h1>{{ heading }}</h1>
+    {{ form_start(form, {attr: {class: 'form'}}) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.slug) }}
+        {{ form_row(form.address) }}
+        {{ form_row(form.websiteUrl) }}
+        {{ form_row(form.onHome) }}
+        {% if venue.logoPath %}
+            <p class="current-logo"><img class="thumb" src="{{ logo_url(venue.logoPath) }}" alt=""> Logo actuel — choisissez un fichier pour le remplacer.</p>
+        {% endif %}
+        {{ form_row(form.logoFile) }}
+        {{ form_rest(form) }}
+        <div class="form-actions">
+            <button type="submit" class="button">Enregistrer</button>
+            <a href="{{ cancel_url }}">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+
+    {% if is_edit %}
+        <p class="danger-zone">
+            {{ include('admin/_delete.html.twig', {
+                action: path('admin_venue_delete', {id: venue.id}),
+                token_id: 'delete-venue-' ~ venue.id,
+                confirm: 'Supprimer le lieu « ' ~ venue.name ~ ' » ?',
+            }) }}
+        </p>
+    {% endif %}
+{% endblock %}

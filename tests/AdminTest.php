@@ -25,6 +25,7 @@ final class AdminTest extends WebTestCase
     public function testMemberCreatesAnEvent(): void
     {
         $format = $this->givenFormat();
+        $venue = $this->givenVenue();
         $this->loginAsMember();
 
         $this->client->request('GET', '/admin/dates/nouvelle');
@@ -32,7 +33,7 @@ final class AdminTest extends WebTestCase
             'event[title]' => 'Cabaret de Noël',
             'event[startsAt]' => '2026-12-18T20:00',
             'event[formatId]' => $format->id,
-            'event[venue]' => 'Blue Monkey',
+            'event[venueId]' => $venue->id,
             'event[price]' => '8 €',
             'event[bookingUrl]' => 'https://billetterie.example/noel',
         ]);
@@ -41,32 +42,34 @@ final class AdminTest extends WebTestCase
         $events = $this->events()->upcoming(new \DateTimeImmutable(self::NOW));
         self::assertCount(1, $events);
         self::assertSame('Cabaret de Noël', $events[0]->title);
+        self::assertSame($venue->id, $events[0]->venueId);
         self::assertSame('2026-12-18 20:00', $events[0]->startsAt->format('Y-m-d H:i'));
         self::assertSame('https://billetterie.example/noel', $events[0]->bookingUrl);
     }
 
     public function testMemberEditsAnEventFromTheList(): void
     {
-        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());
+        $digitalVillage = $this->givenVenue('Digital Village', 'digital-village');
         $this->loginAsMember();
 
         $crawler = $this->client->request('GET', '/admin/dates');
         $this->client->click($crawler->selectLink('Modifier')->link());
         $this->client->submitForm('Enregistrer', [
-            'event[venue]' => 'Digital Village',
+            'event[venueId]' => $digitalVillage->id,
             'event[bookingUrl]' => 'https://www.helloasso.com/associations/compagnie-les-flamants-bleus/evenements/cabaret',
         ]);
 
         self::assertResponseRedirects('/admin/dates');
         $saved = $this->events()->find($event->id);
-        self::assertSame('Digital Village', $saved->venue);
+        self::assertSame($digitalVillage->id, $saved->venueId);
         self::assertSame('https://www.helloasso.com/associations/compagnie-les-flamants-bleus/evenements/cabaret', $saved->bookingUrl);
         self::assertCount(1, $this->events()->upcoming(new \DateTimeImmutable(self::NOW)));
     }
 
     public function testEditFromThePublicSiteReturnsThere(): void
     {
-        $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());
         $this->loginAsMember();
 
         $crawler = $this->client->request('GET', '/');
@@ -80,7 +83,7 @@ final class AdminTest extends WebTestCase
 
     public function testExternalReturnIsIgnored(): void
     {
-        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());
         $this->loginAsMember();
 
         $this->client->request('GET', '/admin/dates/'.$event->id.'?retour=//evil.example');
@@ -125,7 +128,7 @@ final class AdminTest extends WebTestCase
 
     public function testDuplicateKeepsTheOriginal(): void
     {
-        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());
         $this->loginAsMember();
 
         $this->client->request('GET', '/admin/dates/'.$event->id.'/dupliquer');
@@ -161,6 +164,89 @@ final class AdminTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('.field-errors', 'déjà cette adresse');
+    }
+
+    public function testEventSavedBeforeVenuesMustChooseOne(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $venue = $this->givenVenue();
+        $this->loginAsMember();
+
+        $this->client->request('GET', '/admin/dates/'.$event->id);
+        $this->client->submitForm('Enregistrer');
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.field-errors', 'Choisissez un lieu.');
+
+        $this->client->submitForm('Enregistrer', ['event[venueId]' => $venue->id]);
+        self::assertResponseRedirects('/admin/dates');
+        self::assertSame($venue->id, $this->events()->find($event->id)->venueId);
+    }
+
+    public function testMemberCreatesAVenueShownOnTheHomePage(): void
+    {
+        $this->loginAsMember();
+
+        $this->client->request('GET', '/admin/lieux/nouveau');
+        $this->client->submitForm('Enregistrer', [
+            'venue[name]' => 'Blue Monkeys',
+            'venue[slug]' => 'blue-monkeys',
+            'venue[address]' => "12 rue de la Roë\n49100 Angers",
+            'venue[websiteUrl]' => 'https://bluemonkeys.example',
+            'venue[onHome]' => true,
+        ]);
+
+        self::assertResponseRedirects('/admin/lieux');
+        $saved = $this->venues()->findBySlug('blue-monkeys');
+        self::assertSame("12 rue de la Roë\n49100 Angers", $saved->address);
+        self::assertSame('https://bluemonkeys.example', $saved->websiteUrl);
+        self::assertTrue($saved->onHome);
+    }
+
+    public function testMemberEditsAVenueAndKeepsItsLogo(): void
+    {
+        $venue = $this->givenVenue(onHome: true);
+        $venue->logoPath = 'logos/lieu-blue-monkeys.png';
+        $this->venues()->save($venue);
+        $this->loginAsMember();
+
+        $crawler = $this->client->request('GET', '/admin/lieux');
+        $this->client->click($crawler->selectLink('Modifier')->link());
+        $form = $this->client->getCrawler()->selectButton('Enregistrer')->form();
+        $form['venue[onHome]']->untick();
+        $this->client->submit($form);
+
+        self::assertResponseRedirects('/admin/lieux');
+        $saved = $this->venues()->find($venue->id);
+        self::assertFalse($saved->onHome);
+        self::assertSame('logos/lieu-blue-monkeys.png', $saved->logoPath);
+    }
+
+    public function testVenueSlugMustBeUnique(): void
+    {
+        $this->givenVenue();
+        $this->loginAsMember();
+
+        $this->client->request('GET', '/admin/lieux/nouveau');
+        $this->client->submitForm('Enregistrer', [
+            'venue[name]' => 'Autre bar',
+            'venue[slug]' => 'blue-monkeys',
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.field-errors', 'déjà cette adresse');
+    }
+
+    public function testVenueWithUpcomingEventsCannotBeDeleted(): void
+    {
+        $venue = $this->givenVenue();
+        $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $venue);
+        $this->loginAsMember();
+
+        $crawler = $this->client->request('GET', '/admin/lieux');
+        $this->client->submit($crawler->selectButton('Supprimer')->form());
+
+        self::assertResponseRedirects('/admin/lieux');
+        self::assertNotNull($this->venues()->find($venue->id));
     }
 
     public function testMemberAddsAndRemovesAnotherMember(): void

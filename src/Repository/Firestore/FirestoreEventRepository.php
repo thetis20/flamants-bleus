@@ -49,6 +49,7 @@ final class FirestoreEventRepository implements EventRepositoryInterface
             'title' => $event->title,
             'startsAt' => new Timestamp($event->startsAt),
             'formatId' => $event->formatId,
+            'venueId' => $event->venueId,
             'venue' => $event->venue,
             'price' => $event->price,
             'bookingUrl' => $event->bookingUrl,
@@ -78,7 +79,8 @@ final class FirestoreEventRepository implements EventRepositoryInterface
         $event->startsAt = \DateTimeImmutable::createFromInterface($doc['startsAt']->get())
             ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         $event->formatId = $doc['formatId'];
-        $event->venue = $doc['venue'];
+        $event->venueId = $doc['venueId'] ?? null;
+        $event->venue = $doc['venue'] ?? null;
         $event->price = $doc['price'] ?? null;
         $event->bookingUrl = $doc['bookingUrl'] ?? null;
 

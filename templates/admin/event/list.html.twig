@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% macro rows(events, formats, upcoming) %}
+{% macro rows(events, formats, venues, upcoming) %}
     <table class="table">
         <thead>
             <tr><th>Date</th><th>Titre</th><th>Format</th><th>Lieu</th><th>Prix</th><th>Réservation</th><th></th></tr>
@@ -11,7 +11,7 @@
                     <td>{{ event.startsAt|format_datetime(pattern: 'EEE d MMM yyyy, HH:mm', locale: 'fr') }}</td>
                     <td><a href="{{ path('admin_event_edit', {id: event.id}) }}">{{ event.title }}</a></td>
                     <td>{{ formats[event.formatId].title ?? '—' }}</td>
-                    <td>{{ event.venue }}</td>
+                    <td>{{ venues[event.venueId].name ?? event.venue ?? '—' }}</td>
                     <td>{{ event.price ?: '—' }}</td>
                     <td>{% if event.bookingUrl %}<a href="{{ event.bookingUrl }}" target="_blank" rel="noopener">lien</a>{% elseif upcoming %}<a class="to-fill" href="{{ path('admin_event_edit', {id: event.id}) }}">à ajouter</a>{% else %}—{% endif %}</td>
                     <td class="actions">
@@ -37,7 +37,7 @@
 
     <h2>À venir</h2>
     {% if upcoming %}
-        {{ _self.rows(upcoming, formats, true) }}
+        {{ _self.rows(upcoming, formats, venues, true) }}
     {% else %}
         <p class="empty">Aucune date à venir.</p>
     {% endif %}
@@ -45,7 +45,7 @@
     {% if past %}
         <details>
             <summary>Dates passées ({{ past|length }} dernières)</summary>
-            {{ _self.rows(past, formats, false) }}
+            {{ _self.rows(past, formats, venues, false) }}
         </details>
     {% endif %}
 {% endblock %}

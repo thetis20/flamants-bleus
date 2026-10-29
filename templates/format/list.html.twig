@@ -6,15 +6,7 @@
     <h1 class="page-title">Nos formats</h1>
     <div class="format-grid">
         {% for format in formats %}
-            <a class="format-tile" href="{{ path('format_show', {slug: format.slug}) }}">
-                {% if format.logoPath %}
-                    <img src="{{ logo_url(format.logoPath) }}" alt="" loading="lazy">
-                {% endif %}
-                <h2>{{ format.title }}</h2>
-                {% if format.description %}
-                    <p>{{ format.description|length > 140 ? format.description|slice(0, 140) ~ '…' : format.description }}</p>
-                {% endif %}
-            </a>
+            {{ include('_format_tile.html.twig', {format: format, heading: 'h2'}) }}
         {% else %}
             <p class="empty">Les formats arrivent bientôt.</p>
         {% endfor %}

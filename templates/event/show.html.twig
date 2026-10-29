@@ -5,7 +5,14 @@
 
 {% block main %}
     <h1 class="page-title">{{ event.title }}</h1>
-    {{ include('_event_card.html.twig', {event: event, format: null, past: past}) }}
+    {{ include('_event_card.html.twig', {event: event, format: null, venue: venue, past: past}) }}
+
+    {% if venue and (venue.address or venue.websiteUrl) %}
+        <section class="format-detail venue-detail" aria-labelledby="venue-title">
+            <h2 id="venue-title" class="page-title">{{ venue.name }}</h2>
+            {{ include('venue/_contact.html.twig') }}
+        </section>
+    {% endif %}
 
     {% if format %}
         <section class="format-detail" aria-labelledby="format-title">

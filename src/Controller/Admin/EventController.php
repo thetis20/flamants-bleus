@@ -6,6 +6,7 @@ use App\Form\EventType;
 use App\Model\Event;
 use App\Repository\EventRepositoryInterface;
 use App\Repository\FormatRepositoryInterface;
+use App\Repository\VenueRepositoryInterface;
 use Psr\Clock\ClockInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ final class EventController extends AbstractController
     public function __construct(
         private EventRepositoryInterface $events,
         private FormatRepositoryInterface $formats,
+        private VenueRepositoryInterface $venues,
     ) {
     }
 
@@ -30,6 +32,10 @@ final class EventController extends AbstractController
         foreach ($this->formats->all() as $format) {
             $formats[$format->id] = $format;
         }
+        $venues = [];
+        foreach ($this->venues->all() as $venue) {
+            $venues[$venue->id] = $venue;
+        }
 
         $now = $clock->now();
 
@@ -37,6 +43,7 @@ final class EventController extends AbstractController
             'upcoming' => $this->events->upcoming($now),
             'past' => $this->events->past($now, 30),
             'formats' => $formats,
+            'venues' => $venues,
         ]);
     }
 
@@ -89,6 +96,7 @@ final class EventController extends AbstractController
             'is_edit' => $isEdit,
             'cancel_url' => $this->backPath($request) ?? $this->generateUrl('admin_events'),
             'has_formats' => [] !== $this->formats->all(),
+            'has_venues' => [] !== $this->venues->all(),
         ]);
     }
 

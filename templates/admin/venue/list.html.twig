@@ -1,0 +1,34 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block main %}
+    <div class="toolbar">
+        <h1>Lieux</h1>
+        <a class="button" href="{{ path('admin_venue_new') }}">Ajouter un lieu</a>
+    </div>
+
+    {% if venues %}
+        <table class="table">
+            <thead><tr><th>Logo</th><th>Nom</th><th>Page</th><th>Accueil</th><th></th></tr></thead>
+            <tbody>
+                {% for venue in venues %}
+                    <tr>
+                        <td>{% if venue.logoPath %}<img class="thumb" src="{{ logo_url(venue.logoPath) }}" alt="">{% endif %}</td>
+                        <td><a href="{{ path('admin_venue_edit', {id: venue.id}) }}">{{ venue.name }}</a></td>
+                        <td><a href="{{ path('venue_show', {slug: venue.slug}) }}" target="_blank">/lieux/{{ venue.slug }}</a></td>
+                        <td>{{ venue.onHome ? 'Oui' : '—' }}</td>
+                        <td class="actions">
+                            <a href="{{ path('admin_venue_edit', {id: venue.id}) }}">Modifier</a>
+                            {{ include('admin/_delete.html.twig', {
+                                action: path('admin_venue_delete', {id: venue.id}),
+                                token_id: 'delete-venue-' ~ venue.id,
+                                confirm: 'Supprimer le lieu « ' ~ venue.name ~ ' » ?',
+                            }) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="empty">Aucun lieu pour l'instant.</p>
+    {% endif %}
+{% endblock %}

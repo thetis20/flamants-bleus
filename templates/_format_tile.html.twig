@@ -1,0 +1,10 @@
+{# expects: format, heading (h2 or h3) #}
+<a class="format-tile" href="{{ path('format_show', {slug: format.slug}) }}">
+    {% if format.logoPath %}
+        <img src="{{ logo_url(format.logoPath) }}" alt="" loading="lazy">
+    {% endif %}
+    <{{ heading }}>{{ format.title }}</{{ heading }}>
+    {% if format.description %}
+        <p>{{ format.description|length > 140 ? format.description|slice(0, 140) ~ '…' : format.description }}</p>
+    {% endif %}
+</a>

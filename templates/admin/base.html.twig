@@ -12,6 +12,7 @@
             {% set section = app.current_route|split('_')[1] ?? '' %}
             <a href="{{ path('admin_events') }}"{% if section starts with 'event' %} aria-current="page"{% endif %}>Dates</a>
             <a href="{{ path('admin_formats') }}"{% if section starts with 'format' %} aria-current="page"{% endif %}>Formats</a>
+            <a href="{{ path('admin_venues') }}"{% if section starts with 'venue' %} aria-current="page"{% endif %}>Lieux</a>
             <a href="{{ path('admin_links') }}"{% if section starts with 'link' %} aria-current="page"{% endif %}>Liens suivis</a>
             <a href="{{ path('admin_members') }}"{% if section starts with 'member' %} aria-current="page"{% endif %}>Membres</a>
         </nav>

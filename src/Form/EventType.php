@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Model\Event;
 use App\Repository\FormatRepositoryInterface;
+use App\Repository\VenueRepositoryInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -14,8 +15,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class EventType extends AbstractType
 {
-    public function __construct(private FormatRepositoryInterface $formats)
-    {
+    public function __construct(
+        private FormatRepositoryInterface $formats,
+        private VenueRepositoryInterface $venues,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -23,6 +26,10 @@ final class EventType extends AbstractType
         $choices = [];
         foreach ($this->formats->all() as $format) {
             $choices[$format->title] = $format->id;
+        }
+        $venueChoices = [];
+        foreach ($this->venues->all() as $venue) {
+            $venueChoices[$venue->name] = $venue->id;
         }
 
         $builder
@@ -39,7 +46,11 @@ final class EventType extends AbstractType
                 'choices' => $choices,
                 'placeholder' => '— Choisir —',
             ])
-            ->add('venue', TextType::class, ['label' => 'Lieu'])
+            ->add('venueId', ChoiceType::class, [
+                'label' => 'Lieu',
+                'choices' => $venueChoices,
+                'placeholder' => '— Choisir —',
+            ])
             ->add('price', TextType::class, [
                 'label' => 'Prix',
                 'required' => false,

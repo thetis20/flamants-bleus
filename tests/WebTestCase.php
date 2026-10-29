@@ -5,10 +5,12 @@ namespace App\Tests;
 use App\Model\Event;
 use App\Model\Format;
 use App\Model\Member;
+use App\Model\Venue;
 use App\Repository\EventRepositoryInterface;
 use App\Repository\FormatRepositoryInterface;
 use App\Repository\MemberRepositoryInterface;
 use App\Repository\TrackingLinkRepositoryInterface;
+use App\Repository\VenueRepositoryInterface;
 use App\Security\MemberUser;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
@@ -38,6 +40,11 @@ abstract class WebTestCase extends BaseWebTestCase
     protected function events(): EventRepositoryInterface
     {
         return static::getContainer()->get(EventRepositoryInterface::class);
+    }
+
+    protected function venues(): VenueRepositoryInterface
+    {
+        return static::getContainer()->get(VenueRepositoryInterface::class);
     }
 
     protected function members(): MemberRepositoryInterface
@@ -82,13 +89,26 @@ abstract class WebTestCase extends BaseWebTestCase
         return $format;
     }
 
-    protected function givenEvent(Format $format, string $startsAt, string $title = 'Cabaret d\'impro'): Event
+    protected function givenVenue(string $name = 'Blue Monkeys', string $slug = 'blue-monkeys', bool $onHome = false): Venue
+    {
+        $venue = new Venue();
+        $venue->name = $name;
+        $venue->slug = $slug;
+        $venue->onHome = $onHome;
+        $this->venues()->save($venue);
+
+        return $venue;
+    }
+
+    /** Without a venue, the event carries the free-text venue of dates saved before venues were managed. */
+    protected function givenEvent(Format $format, string $startsAt, string $title = 'Cabaret d\'impro', ?Venue $venue = null): Event
     {
         $event = new Event();
         $event->title = $title;
         $event->startsAt = new \DateTimeImmutable($startsAt, new \DateTimeZone('Europe/Paris'));
         $event->formatId = $format->id;
-        $event->venue = 'Blue Monkey';
+        $event->venueId = $venue?->id;
+        $event->venue = null === $venue ? 'Blue Monkey' : null;
         $this->events()->save($event);
 
         return $event;

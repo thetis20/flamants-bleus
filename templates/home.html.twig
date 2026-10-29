@@ -10,9 +10,31 @@
     <section class="agenda" aria-labelledby="agenda-title">
         <h2 id="agenda-title">Prochaines dates</h2>
         {% for row in rows %}
-            {{ include('_event_card.html.twig', {event: row.event, format: row.format}) }}
+            {{ include('_event_card.html.twig', {event: row.event, format: row.format, venue: row.venue}) }}
         {% else %}
             <p class="empty">Pas de spectacle annoncé pour le moment. Suivez-nous sur les réseaux pour connaître les prochaines dates !</p>
         {% endfor %}
     </section>
+
+    {% if formats %}
+        <section class="formats" id="formats" aria-labelledby="formats-title">
+            <h2 id="formats-title" class="page-title">Nos formats</h2>
+            <div class="format-grid">
+                {% for format in formats %}
+                    {{ include('_format_tile.html.twig', {format: format, heading: 'h3'}) }}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {% if venues %}
+        <section class="partners" id="lieux" aria-labelledby="partners-title">
+            <h2 id="partners-title" class="page-title">Ils nous accueillent</h2>
+            <div class="format-grid">
+                {% for venue in venues %}
+                    {{ include('_venue_tile.html.twig', {venue: venue}) }}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
 {% endblock %}
