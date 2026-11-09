@@ -15,6 +15,17 @@ final class SeoTest extends WebTestCase
         self::assertStringContainsString('Sitemap: http://localhost/sitemap.xml', $robots);
     }
 
+    public function testHomeCanBeCrawledAndIndexed(): void
+    {
+        $this->client->request('GET', '/robots.txt');
+        self::assertDoesNotMatchRegularExpression('#^Disallow: /\s*$#m', (string) $this->client->getResponse()->getContent());
+
+        $this->client->request('GET', '/');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('meta[name="robots"]');
+    }
+
     public function testSitemapListsPublicPagesAndOnlyUpcomingDates(): void
     {
         $cabaret = $this->givenFormat();
