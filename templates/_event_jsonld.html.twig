@@ -1,7 +1,8 @@
 {# expects: event, format (nullable), venue (nullable) — schema.org Event, for search engine event listings #}
 {% set troupe = {'@type': 'PerformingGroup', name: 'Les Flamants Bleus', url: url('home')} %}
+{% set postal_address = venue ? venue.address|postal_address : null %}
 {% set place = venue
-    ? {'@type': 'Place', name: venue.name, address: venue.address ? venue.address|replace({"\n": ', '}) : venue.name}
+    ? {'@type': 'Place', name: venue.name, address: postal_address ?: (venue.address ? venue.address|replace({"\n": ', '}) : venue.name)}
     : {'@type': 'Place', name: event.venue, address: event.venue} %}
 {% set data = {
     '@context': 'https://schema.org',
@@ -19,7 +20,12 @@
 {% if format and format.description %}
     {% set data = data|merge({description: format.description|slice(0, 300)}) %}
 {% endif %}
-{% if event.bookingUrl %}
-    {% set data = data|merge({offers: {'@type': 'Offer', url: event.bookingUrl, availability: 'https://schema.org/InStock'}}) %}
+{% set price = event.price|offer_price %}
+{% if event.bookingUrl or price is not null %}
+    {% set offer = {'@type': 'Offer', url: event.bookingUrl ?: url('event_show', {id: event.id}), availability: 'https://schema.org/InStock'} %}
+    {% if price is not null %}
+        {% set offer = offer|merge({price: price, priceCurrency: 'EUR'}) %}
+    {% endif %}
+    {% set data = data|merge({offers: offer}) %}
 {% endif %}
 <script type="application/ld+json">{{ data|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw }}</script>

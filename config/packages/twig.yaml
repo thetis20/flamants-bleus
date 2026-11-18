@@ -7,6 +7,7 @@ twig:
         instagram_url: '%app.instagram_url%'
         facebook_url: '%app.facebook_url%'
         contact_email: 'contact@cielesflamantsbleus.fr'
+        troupe_city: 'Angers'
 
 when@test:
     twig:

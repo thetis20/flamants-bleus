@@ -1,6 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ event.title }} — {{ event.startsAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }} — Les Flamants Bleus{% endblock %}
+{% block title %}
+    {%- set postal_address = venue ? venue.address|postal_address : null -%}
+    {%- set city = postal_address ? postal_address.addressLocality : null -%}
+    {%- set place = venue ? venue.name ~ (city ? ', ' ~ city) : event.venue -%}
+    {{ event.title }} — {{ event.startsAt|format_date(pattern: 'EEEE d MMMM', locale: 'fr') }}{{ place ? ' — ' ~ place }} — Les Flamants Bleus
+{%- endblock %}
 {% block description %}{{ format and format.description ? format.description|slice(0, 155) : parent() }}{% endblock %}
 {% block robots %}{% if past %}<meta name="robots" content="noindex">{% endif %}{% endblock %}
 

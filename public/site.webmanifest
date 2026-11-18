@@ -1,0 +1,14 @@
+{
+    "name": "Les Flamants Bleus",
+    "short_name": "Flamants Bleus",
+    "description": "Troupe d'improvisation théâtrale à Angers",
+    "lang": "fr",
+    "start_url": "/",
+    "display": "browser",
+    "background_color": "#f7edd9",
+    "theme_color": "#294d9b",
+    "icons": [
+        {"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"},
+        {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}
+    ]
+}

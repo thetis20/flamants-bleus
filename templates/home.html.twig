@@ -1,5 +1,8 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Les Flamants Bleus — troupe d'impro à {{ troupe_city }}{% endblock %}
+{% block description %}Les Flamants Bleus, troupe d'improvisation théâtrale à {{ troupe_city }} : spectacles d'impro où le public donne les thèmes, prochaines dates et réservations.{% endblock %}
+
 {% block structured_data %}
     {% set same_as = [] %}
     {% for profile in [instagram_url, facebook_url] %}
@@ -9,8 +12,11 @@
         '@context': 'https://schema.org',
         '@type': 'PerformingGroup',
         name: 'Les Flamants Bleus',
-        description: 'Troupe amateure d\'improvisation théâtrale',
+        description: 'Troupe amateure d\'improvisation théâtrale à ' ~ troupe_city,
         url: url('home'),
+        image: absolute_url(asset('images/logo.png')),
+        areaServed: {'@type': 'City', name: troupe_city},
+        location: {'@type': 'Place', name: troupe_city, address: {'@type': 'PostalAddress', addressLocality: troupe_city, addressRegion: 'Pays de la Loire', addressCountry: 'FR'}},
         logo: absolute_url(asset('images/logo.png')),
         email: contact_email,
         sameAs: same_as,
@@ -20,7 +26,7 @@
 
 {% block main %}
     <section class="hero">
-        <p class="kicker">La troupe amateure d'improvisation théâtrale</p>
+        <p class="kicker">La troupe amateure d'improvisation théâtrale d'{{ troupe_city }}</p>
         <h1>Les Flamants Bleus</h1>
         <p class="tagline">L'imaginaire prend son envol</p>
     </section>

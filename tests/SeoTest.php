@@ -66,6 +66,7 @@ final class SeoTest extends WebTestCase
         $this->venues()->save($venue);
         $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $venue);
         $event->bookingUrl = 'https://billetterie.example/cabaret';
+        $event->price = '6 €';
         $this->events()->save($event);
 
         $crawler = $this->client->request('GET', '/dates/'.$event->id);
@@ -73,8 +74,66 @@ final class SeoTest extends WebTestCase
         $data = json_decode($crawler->filter('.event-card script[type="application/ld+json"]')->text(), true);
         self::assertSame('TheaterEvent', $data['@type']);
         self::assertSame('2026-11-20T20:00:00+01:00', $data['startDate']);
-        self::assertSame('12 rue de la Roë, 49100 Angers', $data['location']['address']);
+        self::assertSame([
+            '@type' => 'PostalAddress',
+            'streetAddress' => '12 rue de la Roë',
+            'postalCode' => '49100',
+            'addressLocality' => 'Angers',
+            'addressCountry' => 'FR',
+        ], $data['location']['address']);
         self::assertSame('https://billetterie.example/cabaret', $data['offers']['url']);
+        self::assertSame('6', $data['offers']['price']);
+        self::assertSame('EUR', $data['offers']['priceCurrency']);
+        self::assertSelectorTextContains('title', 'Blue Monkeys, Angers');
+    }
+
+    public function testAnAddressWithoutPostcodeIsKeptAsText(): void
+    {
+        $venue = $this->givenVenue();
+        $venue->address = 'Place du Ralliement';
+        $this->venues()->save($venue);
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $venue);
+        $event->price = 'Prix libre';
+        $this->events()->save($event);
+
+        $crawler = $this->client->request('GET', '/dates/'.$event->id);
+
+        $data = json_decode($crawler->filter('.event-card script[type="application/ld+json"]')->text(), true);
+        self::assertSame('Place du Ralliement', $data['location']['address']);
+        self::assertArrayNotHasKey('offers', $data);
+    }
+
+    public function testHomeTellsSearchEnginesWhereTheTroupePlays(): void
+    {
+        $crawler = $this->client->request('GET', '/');
+
+        self::assertSelectorTextContains('title', 'Angers');
+        $description = $crawler->filter('meta[name="description"]')->attr('content');
+        self::assertStringContainsString('Angers', $description);
+        self::assertStringNotContainsString('prochains spectacles, formats et réservations', $description);
+        $troupe = json_decode($crawler->filter('script[type="application/ld+json"]')->text(), true);
+        self::assertSame('PerformingGroup', $troupe['@type']);
+        self::assertSame('Angers', $troupe['areaServed']['name']);
+    }
+
+    public function testPagesDeclareSquareIconsAndAManifest(): void
+    {
+        $this->client->request('GET', '/');
+
+        self::assertSelectorExists('link[rel="icon"][href="/favicon.ico"]');
+        self::assertSelectorExists('link[rel="icon"][sizes="48x48"][href="/favicon-48.png"]');
+        self::assertSelectorExists('link[rel="apple-touch-icon"][href="/apple-touch-icon.png"]');
+        self::assertSelectorExists('link[rel="manifest"][href="/site.webmanifest"]');
+        self::assertSelectorExists('meta[name="theme-color"]');
+
+        $public = \dirname(__DIR__).'/public/';
+        foreach (['favicon-48.png' => 48, 'icon-192.png' => 192, 'icon-512.png' => 512, 'apple-touch-icon.png' => 180] as $file => $size) {
+            self::assertSame([$size, $size], \array_slice(getimagesize($public.$file), 0, 2), $file);
+        }
+        $manifest = json_decode((string) file_get_contents($public.'site.webmanifest'), true, flags: \JSON_THROW_ON_ERROR);
+        foreach ($manifest['icons'] as $icon) {
+            self::assertFileExists($public.ltrim($icon['src'], '/'));
+        }
     }
 
     public function testPastDatesAreNeitherIndexedNorDescribedAsEvents(): void
