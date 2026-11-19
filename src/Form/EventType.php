@@ -6,6 +6,7 @@ use App\Model\Event;
 use App\Repository\FormatRepositoryInterface;
 use App\Repository\VenueRepositoryInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -61,6 +62,11 @@ final class EventType extends AbstractType
                 'required' => false,
                 'default_protocol' => 'https',
                 'help' => 'Lien HelloAsso. Laisser vide s\'il n\'est pas encore créé : le site affichera « Réservations bientôt ouvertes ».',
+            ])
+            ->add('noBooking', CheckboxType::class, [
+                'label' => 'Pas de réservation pour cette date',
+                'required' => false,
+                'help' => 'Le site affichera « Sans réservation ».',
             ]);
     }
 

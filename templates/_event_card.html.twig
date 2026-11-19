@@ -21,6 +21,8 @@
         </ul>
         {% if past|default(false) %}
             <span class="booking-soon">Cette date est passée</span>
+        {% elseif event.noBooking %}
+            <span class="booking-soon">Sans réservation</span>
         {% elseif event.bookingUrl %}
             <a class="button" href="{{ event.bookingUrl }}" rel="noopener" target="_blank">Réserver<span class="sr-only"> pour {{ event.title }}, le {{ event.startsAt|format_date(pattern: 'd MMMM', locale: 'fr') }} (nouvel onglet)</span></a>
         {% else %}

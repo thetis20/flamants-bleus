@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class Event
 {
@@ -30,6 +31,9 @@ class Event
     #[Assert\Url(requireTld: true)]
     public ?string $bookingUrl = null;
 
+    /** No booking at all for this date, as opposed to a booking link not created yet. */
+    public bool $noBooking = false;
+
     public function __construct(?string $id = null)
     {
         $this->id = $id ?? bin2hex(random_bytes(10));
@@ -41,5 +45,15 @@ class Event
         $copy->id = bin2hex(random_bytes(10));
 
         return $copy;
+    }
+
+    #[Assert\Callback]
+    public function validateBooking(ExecutionContextInterface $context): void
+    {
+        if ($this->noBooking && $this->bookingUrl) {
+            $context->buildViolation('Retirez le lien ou décochez « Pas de réservation ».')
+                ->atPath('bookingUrl')
+                ->addViolation();
+        }
     }
 }

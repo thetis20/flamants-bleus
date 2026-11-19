@@ -53,6 +53,7 @@ final class FirestoreEventRepository implements EventRepositoryInterface
             'venue' => $event->venue,
             'price' => $event->price,
             'bookingUrl' => $event->bookingUrl,
+            'noBooking' => $event->noBooking,
         ]);
     }
 
@@ -83,6 +84,7 @@ final class FirestoreEventRepository implements EventRepositoryInterface
         $event->venue = $doc['venue'] ?? null;
         $event->price = $doc['price'] ?? null;
         $event->bookingUrl = $doc['bookingUrl'] ?? null;
+        $event->noBooking = $doc['noBooking'] ?? false;
 
         return $event;
     }

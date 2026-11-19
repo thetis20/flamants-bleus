@@ -47,6 +47,38 @@ final class AdminTest extends WebTestCase
         self::assertSame('https://billetterie.example/noel', $events[0]->bookingUrl);
     }
 
+    public function testMemberMarksAnEventWithoutBooking(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());
+        $this->loginAsMember();
+
+        $this->client->request('GET', '/admin/dates/'.$event->id);
+        $this->client->submitForm('Enregistrer', ['event[noBooking]' => true]);
+
+        self::assertResponseRedirects('/admin/dates');
+        self::assertTrue($this->events()->find($event->id)->noBooking);
+
+        $this->client->request('GET', '/admin/dates');
+        self::assertSelectorNotExists('a.to-fill');
+        self::assertAnySelectorTextContains('td', 'aucune');
+    }
+
+    public function testEventCannotHaveBothABookingLinkAndNoBooking(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());
+        $this->loginAsMember();
+
+        $this->client->request('GET', '/admin/dates/'.$event->id);
+        $this->client->submitForm('Enregistrer', [
+            'event[bookingUrl]' => 'https://billetterie.example/noel',
+            'event[noBooking]' => true,
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('body', 'Retirez le lien');
+        self::assertFalse($this->events()->find($event->id)->noBooking);
+    }
+
     public function testMemberEditsAnEventFromTheList(): void
     {
         $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00', venue: $this->givenVenue());

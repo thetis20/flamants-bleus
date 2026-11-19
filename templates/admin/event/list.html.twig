@@ -14,7 +14,7 @@
                     <td>{{ formats[event.formatId].title ?? '—' }}</td>
                     <td>{{ venues[event.venueId].name ?? event.venue ?? '—' }}</td>
                     <td>{{ event.price ?: '—' }}</td>
-                    <td>{% if event.bookingUrl %}<a href="{{ event.bookingUrl }}" target="_blank" rel="noopener">lien<span class="sr-only"> de réservation (nouvel onglet)</span></a>{% elseif upcoming %}<a class="to-fill" href="{{ path('admin_event_edit', {id: event.id}) }}">à ajouter</a>{% else %}—{% endif %}</td>
+                    <td>{% if event.noBooking %}aucune{% elseif event.bookingUrl %}<a href="{{ event.bookingUrl }}" target="_blank" rel="noopener">lien<span class="sr-only"> de réservation (nouvel onglet)</span></a>{% elseif upcoming %}<a class="to-fill" href="{{ path('admin_event_edit', {id: event.id}) }}">à ajouter</a>{% else %}—{% endif %}</td>
                     <td class="actions">
                         <a href="{{ path('admin_event_edit', {id: event.id}) }}">Modifier</a>
                         <a href="{{ path('admin_event_duplicate', {id: event.id}) }}">Dupliquer</a>

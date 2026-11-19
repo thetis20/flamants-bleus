@@ -57,6 +57,19 @@ final class PublicPagesTest extends WebTestCase
         self::assertSelectorNotExists('.event-card a.button');
     }
 
+    public function testEventWithoutBookingSaysSo(): void
+    {
+        $event = $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
+        $event->noBooking = true;
+        $this->events()->save($event);
+
+        $this->client->request('GET', '/');
+
+        self::assertSelectorTextContains('.booking-soon', 'Sans réservation');
+        self::assertSelectorNotExists('.event-card a.button');
+        self::assertSelectorTextNotContains('.event-card', 'bientôt ouvertes');
+    }
+
     public function testEditLinkIsShownToMembersOnly(): void
     {
         $this->givenEvent($this->givenFormat(), '2026-11-20 20:00');
